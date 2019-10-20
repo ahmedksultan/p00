@@ -1,3 +1,10 @@
+ayhamA -- 2019-10-18 6:00
+    - DB Design and Components and Desc mk1
+    - Relationship between components and front and backend desc discord call
+
 ayhamA -- 2019-10-20 4:55
     - Initalized repo and added collaborators, expecting finalized design doc and roles in due time.
+    - Used draw.io
+    - Added coherency to maps, and improved component flow
+    - Proofread
   
