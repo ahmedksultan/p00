@@ -102,3 +102,18 @@ have edited it by performing “stories LEFT JOIN users” on the condition that
 column (which is stored in the users table). Similarly, we could find for each user the stories for which they are the last editor,
 by performing “users LEFT JOIN stories” on the condition that the user’s name is found in a story’s “Last Editor” column. This can
 be done for a variety of combinations involving different information pertaining to a user or story. 
+
+alnasserA -- 2019-10-21 11:16
+	Article Four Summary (sqlitetutorial.net/sqlite-cross-join/)
+	The CROSS JOIN operation finds the Cartesian Product of two tables. Effectively, making a punnett square of the two tables with
+the total row count being equal to the product of the row count of the first and second table. This operation is very slow as it
+needs to operate in quadratic time. 
+	Take table A and table B. Table A has rows a,b,c and table B has rows x,y,z. Cross joining these two tables will form a new
+table, with rows: xa,xb,xc,ya,yb,yc,za,zb,zc. This table: A cross B (A X B), let's call it C, has nine rows, is the product of the
+three rows, from table A, to the three rows from table B.  
+	Its uses are minimal but nonnegligible. Although it forms massive unwieldly tables that, if done poorly, will slow the program
+to a crawl; being able to merge two tables in this way could be very useful when viewing the total number of stories edited. We have two
+tables in our program. One with the user names and log ins, and one with the list of stories and edits. Cross joining these two tables
+will form a bunch of useless rows that do nothing. But there are a few rows: ones that contain the user name and the stories they
+edited. We can take these outputted rows to the user when they request the stories they edited, and then KILL the table because it
+wastes a lot of memory for unnecessary crosses.     
