@@ -7,4 +7,16 @@ ayhamA -- 2019-10-20 4:55
     - Used draw.io
     - Added coherency to maps, and improved component flow
     - Proofread
-  
+ 
+ amandaZ -- 2019-10-21 8:27
+    Article One Summary (https://www.sqlitetutorial.net/sqlite-tutorial/sqlite-join/): 
+    -There are multiple ways to query data from two tables. The methods include inner join, left join, and cross join
+        -inner join: if a row satisfies the join condition listed after on command, the colums of rows from the tables are combined into one resulting table
+        -left join: joins tables based on join condition listed after on command but will include all rows of left table and and put null into corresponding columns of right table if it doens't exist
+        -cross join: has no join condition and will combine every row of first and second table together
+        -where: gives a condition on the resulting table displayed
+        -order by: order the resulting data table alphabetically by a certain column
+        -using: a replacement for join condition if two tables have matching clauses
+        
+    We will need these different join methods to traverse between our database files. For example, to let users read a story that they edited would require left join where the condition is the story name which might give us either the html file of the story or give us null. Moreover, for when editing new stories, we have to overwrite both tables so we might just combine them using cross join before editing everything
+        
