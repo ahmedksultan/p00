@@ -1,14 +1,14 @@
-ayhamA -- 2019-10-18 6:00
+ayhamA -- 2019-10-18 18:00
     - DB Design and Components and Desc mk1
     - Relationship between components and front and backend desc discord call
 
-ayhamA -- 2019-10-20 4:55
+ayhamA -- 2019-10-20 18:55
     - Initalized repo and added collaborators, expecting finalized design doc and roles in due time.
     - Used draw.io
     - Added coherency to maps, and improved component flow
     - Proofread
 
-amandaZ -- 2019-10-21 8:27
+amandaZ -- 2019-10-21 20:27
     Article One Summary (https://www.sqlitetutorial.net/sqlite-tutorial/sqlite-join/):
     -There are multiple ways to query data from two tables. The methods include inner join, left join, and cross join
         -inner join: if a row satisfies the join condition listed after on command, the colums of rows from the tables are combined into one resulting table
@@ -25,7 +25,7 @@ stories, we have to overwrite both tables so we might just combine them using cr
 editing everything.
 
 
-chenJ -- 2019-10-21 9:02
+chenJ -- 2019-10-21 21:02
 	Article Two Summary (sqlitetutorial.net/sqlite-inner-join/):
 	- The "INNER JOIN" clause allows users to combine two tables by comparing foreign keys. This
 clause is commonly used to link columns from different tables, via a "common factor". For example, as
@@ -54,7 +54,7 @@ down). Instead of controlling every possible variable and becoming stressed as a
 learn how to work with the flaws of the system and live with it.
 
 
-caoT -- 2019-10-21 10:44
+caoT -- 2019-10-21 22:44
 	Article Three Summary (sqlitetutorial.net/sqlite-left-join/)
 	- The LEFT JOIN clause allows users to combine information from two tables by looking for a common
 factor in both. The query call for this clause is usually “table_A LEFT JOIN table_B ON [insert expression]”
@@ -103,7 +103,7 @@ column (which is stored in the users table). Similarly, we could find for each u
 by performing “users LEFT JOIN stories” on the condition that the user’s name is found in a story’s “Last Editor” column. This can
 be done for a variety of combinations involving different information pertaining to a user or story.
 
-alnasserA -- 2019-10-21 11:16
+alnasserA -- 2019-10-21 23:16
 	Article Four Summary (sqlitetutorial.net/sqlite-cross-join/)
 	The CROSS JOIN operation finds the Cartesian Product of two tables. Effectively, making a punnett square of the two tables with
 the total row count being equal to the product of the row count of the first and second table. This operation is very slow as it
