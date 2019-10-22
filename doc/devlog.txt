@@ -18,7 +18,11 @@ amandaZ -- 2019-10-21 8:27
         -order by: order the resulting data table alphabetically by a certain column
         -using: a replacement for join condition if two tables have matching clauses
         
-    We will need these different join methods to traverse between our database files. For example, to let users read a story that they edited would require left join where the condition is the story name which might give us either the html file of the story or give us null. Moreover, for when editing new stories, we have to overwrite both tables so we might just combine them using cross join before editing everything
+    We will need these different join methods to traverse between our database files. For example, to
+let users read a story that they edited would require left join where the condition is the story name
+which might give us either the html file of the story or give us null. Moreover, for when editing new
+stories, we have to overwrite both tables so we might just combine them using cross join before
+editing everything
         
 
 chenJ -- 2019-10-21 9:02
