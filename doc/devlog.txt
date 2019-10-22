@@ -8,7 +8,7 @@ ayhamA -- 2019-10-20 4:55
     - Added coherency to maps, and improved component flow
     - Proofread
  
- amandaZ -- 2019-10-21 8:27
+amandaZ -- 2019-10-21 8:27
     Article One Summary (https://www.sqlitetutorial.net/sqlite-tutorial/sqlite-join/): 
     -There are multiple ways to query data from two tables. The methods include inner join, left join, and cross join
         -inner join: if a row satisfies the join condition listed after on command, the colums of rows from the tables are combined into one resulting table
@@ -20,3 +20,42 @@ ayhamA -- 2019-10-20 4:55
         
     We will need these different join methods to traverse between our database files. For example, to let users read a story that they edited would require left join where the condition is the story name which might give us either the html file of the story or give us null. Moreover, for when editing new stories, we have to overwrite both tables so we might just combine them using cross join before editing everything
         
+
+chenJ -- 2019-10-21 9:02
+	Article Two Summary (sqlitetutorial.net/sqlite-inner-join/):
+	- The "INNER JOIN" clause allows users to combine two tables by comparing foreign keys. This clause is commonly used to link columns from different tables, via a "common factor". For example, as used in the tutorial, suppose you have the following tables:
+	Table A:		Table B:
+	m	f		n	f
+	1	1		1	1
+	2	2		2	3
+	3	3		3	5
+Then, "INNER JOIN B on B.f = A.f" will result in the table:
+	Table Result:
+	m	A.f	B.f	n
+	1	1	1	1
+	3	3	3	2
+We can use this to relate the users to their edits and account information. In one table, we can have the user's account information, such as emails, passwords, and profile pictures. In a table, we can have their recent updates. The "common factor" between the tables is the username, which we can then use INNER JOIN to bring together.
+
+	"Programming Sucks" Summary and Lesson:
+	- This humorous article explains the hectic life of a programmer: hacking toegher chunks of code that hopefully some idiot won't change and break. To the author, programming is about scrambling to uphold the large system that is the world. There are just some things that are beyond our control (for example, the author mentions some 'idiots' changing the code, leading to a system breaking down). Instead of controlling every possible variable and becoming stressed as a result, we need to learn how to work with the flaws of the system and live with it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
