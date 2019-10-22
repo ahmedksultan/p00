@@ -9,7 +9,7 @@ ayhamA -- 2019-10-20 4:55
     - Proofread
  
 amandaZ -- 2019-10-21 8:27
-    Article One Summary (https://www.sqlitetutorial.net/sqlite-tutorial/sqlite-join/): 
+    **Article One Summary** (https://www.sqlitetutorial.net/sqlite-tutorial/sqlite-join/): 
     -There are multiple ways to query data from two tables. The methods include inner join, left join, and cross join
         -inner join: if a row satisfies the join condition listed after on command, the colums of rows from the tables are combined into one resulting table
         -left join: joins tables based on join condition listed after on command but will include all rows of left table and and put null into corresponding columns of right table if it doens't exist
@@ -22,11 +22,11 @@ amandaZ -- 2019-10-21 8:27
 let users read a story that they edited would require left join where the condition is the story name
 which might give us either the html file of the story or give us null. Moreover, for when editing new
 stories, we have to overwrite both tables so we might just combine them using cross join before
-editing everything
+editing everything.
         
 
 chenJ -- 2019-10-21 9:02
-	Article Two Summary (sqlitetutorial.net/sqlite-inner-join/):
+	**Article Two Summary** (sqlitetutorial.net/sqlite-inner-join/):
 	- The "INNER JOIN" clause allows users to combine two tables by comparing foreign keys. This
 clause is commonly used to link columns from different tables, via a "common factor". For example, as
 used in the tutorial, suppose you have the following tables:
@@ -45,7 +45,7 @@ the user's account information, such as emails, passwords, and profile pictures.
 have their recent updates. The "common factor" between the tables is the username, which we can then
 use INNER JOIN to bring together.
 
-	"Programming Sucks" Summary and Lesson:
+	**"Programming Sucks" Summary and Lesson:**
 	- This humorous article explains the hectic life of a programmer: hacking toegher chunks of
 code that hopefully some idiot won't change and break. To the author, programming is about scrambling
 to uphold the large system that is the world. There are just some things that are beyond our control
@@ -53,6 +53,31 @@ to uphold the large system that is the world. There are just some things that ar
 down). Instead of controlling every possible variable and becoming stressed as a result, we need to
 learn how to work with the flaws of the system and live with it.
 
+
+caoT -- 2019-10-21 10:34
+	**Article Three Summary** (sqlitetutorial.net/sqlite-left-join/)
+	- The LEFT JOIN clause allows users to combine information from two tables by looking for a common factor in both. The query call for this clause is usually “table_A LEFT JOIN table_B ON [insert expression]” after the usual queries of SELECT and FROM.
+	- Something important to note is that all the rows in table_A are included in the result, while only the rows in table_B that correspond to the rows in table_A will be displayed. This makes the ordering of tables very important when using LEFT JOIN and is what sets LEFT JOIN apart from other JOIN clauses. 
+	- Other additional queries are WHERE and ORDER BY, both of which follow the LEFT JOIN clause. WHERE is. a search condition that makes results displayed even more specific and narrowed, while ORDER BY allows the user to specify the order they want their resulting data to be displayed (e.g. by ascending ID number).
+	- For example, given a table of students and their IDs, and another table of classes with the ID of the student taking the class:
+	**students (table_A)**		**classes (table_B)
+	*name*		*id*		*class*		*id*
+	Amanda		1		softdev		1
+	Tiffany		2		softdev		3
+	Ayham		3		calculus	4
+	Jesse		4		spanish		5
+	
+	- Say, you want to create a joined table of each student’s name and ID and the classes they take (“SELECT name, students.id, class FROM”). You would join the tables by their common factor of ID number, by using the conditional expression “students.id = classes.id" as in “table_A LEFT JOIN table_B ON students.id = classes.id”. You also want the students to be displayed in alphabetical order so you would add “ORDER BY name”. The full query is **“SELECT name, students.id, class FROM students LEFT JOIN classes ON students.id = classes.id ORDER BY name”** 
+	- The result would look like this:
+	*name*		*id*		*class*
+	Amanda		1		softdev
+	Ayham		3		softdev
+	Jesse		4		calculus
+	Tiffany		2		*null*
+	
+	- As displayed by the joint table, information from table_B, classes, was combined onto table_A, students. The names are listed in alphabetical order, and note that all the rows from table_A were displayed, while only relevant information from table_B were shown. Something to note is that for the name “Tiffany”, the class value is null because there were no classes from table_B that had the matching ID for “Tiffany”.
+	
+	The LEFT JOIN clause can be very useful in our game implementation. Our database will have two main tables, one for keeping stories and their latest edits, and one for storing users, their account information, and associated stories. LEFT JOIN would allow us to find specific information about a story or a user. For example, we could find for each story the users that have edited it by performing “stories LEFT JOIN users” on the condition that the story title is found in a user’s “edited_stories” column (which is stored in the users table). Similarly, we could find for each user the stories for which they are the last editor, by performing “users LEFT JOIN stories” on the condition that the user’s name is found in a story’s “Last Editor” column. This can be done for a variety of combinations involving different information pertaining to a user or story. 
 
 
 
