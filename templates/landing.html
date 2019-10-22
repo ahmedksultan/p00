@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title> {{ FoldOver }} </title>
+  </head>
+  <body>
+    <h1>
+      <p> {% set messages = get_flashed_messages() %}
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+      </p>
+    </h1>
+    <form action = "/auth">
+      Username<br>
+      <input type = "username" name = "username">
+      <br>
+      Password<br>
+      <input type = "password" name = "password">
+      <br>
+      <input type = "submit" name = "sub1">
+    </form>
+    <form action = "/signup">
+      <input type = "button" value = "Sign Up">
+  </body>
+</html>
