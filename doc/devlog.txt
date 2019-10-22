@@ -123,7 +123,14 @@ will form a bunch of useless rows that do nothing. But there are a few rows: one
 edited. We can take these outputted rows to the user when they request the stories they edited, and then KILL the table because it
 wastes a lot of memory for unnecessary crosses.
 
-caoT -- 2019-10-22 12:54
+caoT -- 2019-10-22 00:54
   - Updated design.pdf with new component map using draw.io
   - Added clarity and development to some components of the program suggested by classmates
-  
+
+caoT -- 2019-10-22 19:44
+  - Created html pages for landing page (also login), homepage (stories), sign up, and logout
+  - Facilitated the storing of html form data into the users database
+  - Checked for user login credentials by searching the users database for correct the username and password match
+    - flashes messages for when a username or password is nonexistent or incorrect
+  - When creating an account, made sure to check that "password" and "re-enter password" were the same
+  - Sign up and logout buttons link to their respective routes
