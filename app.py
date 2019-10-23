@@ -10,19 +10,11 @@ import sqlite3   #enable control of an sqlite database
 
 DB_FILE= "foldoverdata.db"
 
-db = sqlite3.connect(DB_FILE) #open if file exists, otherwise create
-c = db.cursor()               #facilitate db ops
-
-command = "CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT, stories_edited BLOB, is_admin INTEGER)"
-c.execute(command)
-
-db.commit()
-db.close()
 
 #function for adding a user into the users database
 def adduser(username, password, admin):
-    db = sqlite3.connect(DB_FILE)
-    c = db.cursor()
+    db = sqlite3.connect(DB_FILE) #open if file exists, otherwise create
+    c = db.cursor()               #facilitate db ops
     command = "INSERT INTO users (username, password, is_admin) VALUES (\"" + username + "\", \"" + password + "\", " + str(admin) + ")"
     c.execute(command)
     db.commit()
@@ -31,8 +23,8 @@ def adduser(username, password, admin):
 
 #function for checking if a user's login credentials are correct
 def checkuser(user, pwd):
-    db = sqlite3.connect(DB_FILE)
-    c = db.cursor()
+    db = sqlite3.connect(DB_FILE) #open if file exists, otherwise create
+    c = db.cursor()               #facilitate db ops
     command = "SELECT password FROM users WHERE username = \"" + user + "\""
     cur = c.execute(command)
     temp = cur.fetchone()
@@ -43,14 +35,6 @@ def checkuser(user, pwd):
         else: return "Password is incorrect."
     else:
         return "Username does not exist."
-        # command = "SELECT username FROM users WHERE password = \"" + pwd + "\""
-        # cur = c.execute(command)
-        # temp = cur.fetchone()
-        # if temp != None:
-        #     checkuser = temp[0]
-        #     if checkuser == user:
-        #         return "done"
-        #     else: return "Username is incorrect."
 
 #landing page
 @app.route("/")
@@ -113,15 +97,6 @@ def logout():
     session.pop('user')
     flash("You have successfully logged out.")
     return render_template('landing.html')
-
-# @app.route("/auth")
-# def authenticate(): #checks to match user and pass
-#     session['user'] = request.args['username']
-#     print(session['user'])
-#     if (request.args['username'] == username and request.args['password'] == password) :
-#        return redirect (url_for("welcome")) #goes to welcome page if credentials are correct
-#     else:
-#        return redirect (url_for("err")) #goes to error page is wrong
 
 if __name__ == "__main__":
     app.debug = True
