@@ -126,7 +126,11 @@ wastes a lot of memory for unnecessary crosses.
 caoT -- 2019-10-22 00:54
   - Updated design.pdf with new component map using draw.io
   - Added clarity and development to some components of the program suggested by classmates
-
+zhengA -- 2019-10-22  8:45
+  -planned out mechanism for queue
+  -going to use a queue so that only one person can edit as a time
+  -queue allows for popping off the latest user that finished edit and shrink edits
+  -search mechanism requires sqlite stuff, but planned out which rows and colums are going to be used
 caoT -- 2019-10-22 19:44
   - Created html pages for landing page (also login), homepage (stories), sign up, and logout
   - Facilitated the storing of html form data into the users database
@@ -134,3 +138,8 @@ caoT -- 2019-10-22 19:44
     - flashes messages for when a username or password is nonexistent or incorrect
   - When creating an account, made sure to check that "password" and "re-enter password" were the same
   - Sign up and logout buttons link to their respective routes
+zhengA --2019-10-23 23:45
+  -experimented with implementation of queue and realized I need indexes and remove from middle if someone exits
+  -so changed mind and is using lists now for the "line"
+  -problem: if they exit website from edit page, we don't know they disconnected and thus they stay in line...
+  -maybe if we can get url or see if the user is still on the edit page???
