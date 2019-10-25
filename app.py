@@ -127,8 +127,13 @@ def logout():
 
 @app.route("/story")
 
-def findStory():
+def readStory():
     return "Don't know how to do this yet."
+
+@app.route("/editstory")
+
+def retrieve_latest():
+    return "get latest edit here"
 
 if __name__ == "__main__":
     app.debug = True
