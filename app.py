@@ -10,6 +10,7 @@ import sqlite3   #enable control of an sqlite database
 
 DB_FILE= "foldoverdata.db"
 
+#=================== Part 1: Database Accessing Functions ==============
 
 #function for adding a user into the users database
 def adduser(username, password, admin):
@@ -47,6 +48,10 @@ def checksign(user):
         return "Username already exists. Please give another username."
     else: return "done" #if username is not in database
 
+
+
+#=================== Part 2: Routes ==============
+
 #landing page
 @app.route("/")
 
@@ -64,18 +69,21 @@ def start():
 def authenticate():
     username = request.args['username'] #retrieve html form username and password
     password = request.args['password']
-    check = checkuser(username, password) #check database
+    if username == "": #if there is no input
+        flash("Please enter a username.")
+        return render_template('landing.html')
+    check = checkuser(username, password) #check database for username and password
     if(check == "done"):
         session['user'] = username
         return redirect (url_for("story")) #redirect to homepage if credentials are correct
-    else:
+    else: #otherwise flash error message
         flash("" + check)
         return render_template('landing.html')
 
 #sign up page
 @app.route("/signup")
 
-def sign():
+def sign(): #go to sign up page
     return render_template('signup.html')
 
 #check sign up information
@@ -85,16 +93,22 @@ def signcheck():
     username = request.args['username'] #retrieve html form username and password
     password = request.args['password']
     passwordagain = request.args['passwordagain']
-    check = checksign(username) #check if username already exists in database
-    if(check != "done"):
-        flash("" + check)
+    if username == "": #if there is no input
+        flash("Please give a username.")
+        return render_template('signup.html')
+    else:
+        check = checksign(username) #check if username already exists in database
+        if(check != "done"):
+            flash("" + check)
+            return render_template('signup.html')
+    if password == "": #check if password input is empty
+        flash("Please give a username and password.")
         return render_template('signup.html')
     if passwordagain == password: #check to make sure both passwords are the same
         if(adduser(username, password, 0) == "done"):
             session['user'] = request.args['username']
             return redirect (url_for("story")) #if everything is correct, sign up and redirect to homepage
-        else: return "No"
-    else:
+    else: #otherwise flash error message
         flash("Password does not match.")
         return render_template('signup.html')
 
@@ -102,18 +116,26 @@ def signcheck():
 @app.route("/mystories")
 
 def story():
-    return render_template('homepage.html')
+    if session.get('user') is None: #only go to this page if there's a user
+        return redirect (url_for("start"))
+    else:
+        return render_template('homepage.html')
 
 #search page
 @app.route("/search")
 
 def find():
-    return render_template('searchpage.html')
+    if session.get('user') is None: #only go to this page if there's a user
+        return redirect (url_for("start"))
+    else:
+        return render_template('searchpage.html')
 
 @app.route("/searchresults")
 
 def take():
-    keywords = request.args['keywords']
+    if session.get('user') is None: #only go to this page if there's a user
+        return redirect (url_for("start"))
+    keywords = request.args['keywords'] #retrieve search input
     tags = request.args['tags']
     return "done"
 
@@ -121,6 +143,8 @@ def take():
 @app.route("/logout")
 
 def logout():
+    if session.get('user') is None: #only allow logout if there is a user session running
+        return redirect (url_for("start"))
     session.pop('user') #remove user from session
     flash("You have successfully logged out.")
     return render_template('landing.html')
@@ -128,11 +152,15 @@ def logout():
 @app.route("/story")
 
 def readStory():
+    if session.get('user') is None: #only go to this page if there's a user
+        return redirect (url_for("start"))
     return "Don't know how to do this yet."
 
 @app.route("/editstory")
 
-def retrieve_latest():
+def retrieve_latest(): #only go to this page if there's a user
+    if session.get('user') is None:
+        return redirect (url_for("start"))
     return "get latest edit here"
 
 if __name__ == "__main__":
