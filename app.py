@@ -137,6 +137,8 @@ def take():
         return redirect (url_for("start"))
     keywords = request.args['keywords'] #retrieve search input
     tags = request.args['tags']
+    if keywords == "" and tags == "":
+        return render_template('searchpage.html')
     return "done"
 
 #logout
