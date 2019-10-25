@@ -108,7 +108,14 @@ def story():
 @app.route("/search")
 
 def find():
-    return "Hello"
+    return render_template('searchpage.html')
+
+@app.route("/searchresults")
+
+def take():
+    keywords = request.args['keywords']
+    tags = request.args['tags']
+    return "done"
 
 #logout
 @app.route("/logout")
@@ -117,6 +124,11 @@ def logout():
     session.pop('user') #remove user from session
     flash("You have successfully logged out.")
     return render_template('landing.html')
+
+@app.route("/story")
+
+def findStory():
+    return "Don't know how to do this yet."
 
 if __name__ == "__main__":
     app.debug = True
