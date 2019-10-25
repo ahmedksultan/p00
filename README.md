@@ -10,4 +10,4 @@
 	- Modifying UI and UX for the website <br>
 	- Incorporates Jesse and Amanda's backend into the frontend <br>
 ## Jesse - Backend SQL<br>
-      - Making a database builder file and csvs to facililate external output into the program's input <br>
+      	- Making a database builder file and csvs to facililate external output into the program's input <br>
