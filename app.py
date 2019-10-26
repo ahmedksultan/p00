@@ -127,13 +127,48 @@ def find():  # search page
 
 @app.route("/searchresults", methods=["GET", "POST"])
 def take():
+    db = sqlite3.connect(DB_FILE)  # open database
+    c = db.cursor()
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect (url_for("start"))
     keywords = request.form['keywords']  # retrieve search input
     tags = request.form['tags']
     if keywords == "" and tags == "":
         return render_template('searchpage.html')
-    return "done"
+    if len(tags) > 0:
+        tags = tags.split(" ");
+    if len(keywords) > 0:
+        keywords = keywords.split(" ");
+        command = "SELECT story_title FROM edits WHERE "
+        count = 0
+        while count < len(keywords):
+            if count == len(keywords)-1:
+                command += "story_title LIKE \"%"+keywords[count] + "%\";"
+            else:
+                command += "story_title LIKE \"%"+keywords[count] + "%\" OR "
+            count += 1
+    if len(tags) > 0 and len(keywords) == 0:
+        command = "SELECT story_title FROM edits WHERE "
+        count = 0
+        while count < len(tags):
+            if count == len(tags)-1:
+                command+="tags LIKE \"%"+tags[count]+"%\";"
+            else:
+                command+= "tags LIKE \"%"+tags[count]+"%\" OR "
+            count += 1
+    if len(keywords) > 0 and len(tags) > 0:
+        count=0;
+        while count < len(tags):
+            command +=" OR tags LIKE \"%"+tags[count]+"%\""
+            count += 1
+        command += ";"
+    print(command)
+    c.execute(command)
+    searchResults=c.fetchall()
+    count=0
+    db.commit() #save changes
+    db.close()  #close database
+    return render_template('searchresults.html')
 
 
 @app.route("/logout")
