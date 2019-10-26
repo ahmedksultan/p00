@@ -2,6 +2,7 @@
 #SoftDev
 
 import sqlite3   #enable control of an sqlite database
+import csv
 
 DB_FILE= "foldoverdata.db"
 
@@ -10,24 +11,29 @@ c = db.cursor()               #facilitate db ops
 
 #================================================
 
-#"users" Database
-#This database is for storing user information and permissions
-	#username TEXT: user's username
-	#password TEXT: user's password
-	#stories_edited: history of all created and edited stories
-	#is_admin: 1 if admin, 0 if not
-command = "CREATE TABLE users (username TEXT, password TEXT, stories_edited BLOB, is_admin INTEGER)"
+#"users" table
+command = "CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT, stories_edited TEXT, is_admin BOOLEAN)"
 c.execute(command)
 
-#(Main) Database Story Attribute
-#This database is for storing information about the stories itself
-	#story_title TEXT: the title of the story
-	#time_stamp BLOB: the time story was last edited
-	#last_editor TEXT: the last editor of the story
-	#tags TEXT: tags for stories for easier search and categorization
-	#story BLOB: the HTML of the whole story, to be displayed
-command = "CREATE TABLE stories (story_title TEXT, time_stamp BLOB, last_editor TEXT, tags TEXT, story BLOB)"
+csvfile = open('userdata.csv', newline='')
+reader = csv.DictReader(csvfile, delimiter = '\t')
+for row in reader:
+	command = 'INSERT INTO users VALUES(\"' + row['username'] + '\",\"' + row['password'] + '\",\"' + row['stories_edited'] + '\",' + row['is_admin'] + ')'
+	print(command)
+	c.execute(command)
+
+#"edits" table
+command = "CREATE TABLE IF NOT EXISTS edits (story_title TEXT, time_stamp BLOB, last_editor TEXT, tags TEXT, story TEXT)"
 c.execute(command)
+
+csvfile = open('editdata.csv', newline='')
+reader = csv.DictReader(csvfile, delimiter = '\t')
+
+for row in reader:
+	command = 'INSERT INTO edits VALUES(\"' + row['story_title'] + '\",\"' + row['time_stamp'] + '\",\"' + row['last_editor'] + '\",\"' + row['tags'] + '\",\"' + row['story'] + '\")'
+	print(command)
+	c.execute(command)
+
 #================================================
 db.commit()
 db.close()

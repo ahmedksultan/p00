@@ -1,4 +1,4 @@
-story_title,time_stamp,last_editor,tags,story
-"Ayham's Bedtime",10--18--2019:10:30:51,Mandy8871,realistic-fiction,"<b>I HAVE NO LIFE UNLESS I HAVE REDBULL!</b>"
-"Getting Into College",10--31--2019:11:59:59,aalnasser00,fantasy tragedy comedy,"<h2>For i in range(0,15): \n print("Rejected!")</h2>"
-"Actually Saving the Turtles",11-01-2019:00:00:01,vscojesse,dark-humor,"<p>The turtles feel misrepresented by the VSCO girls and sksksk their limited reptilian vocal cords to death.</p>"
+story_title	time_stamp	last_editor	tags	story
+Ayham's Bedtime	10--18--2019:10:30:51	Mandy8871	realistic-fiction	<b>I HAVE NO LIFE UNLESS I HAVE REDBULL!</b>
+Getting Into College	10--31--2019:11:59:59	aalnasser00	fantasy tragedy comedy	<h2>For i in range(0,15): print('Rejected!')</h2>
+Actually Saving the turtles	11--01--2019:00:00:01	vscojesse	dark-humor	<p>The turtles feel misrepresented by the VSCO girls and sksksk their limited reptilian vocal cords to death.</p>

@@ -177,4 +177,8 @@ zhengA -- 2019-10-25 08:45
 	-intersecting lists for tags and titles if user inputs both
 	-html lists and links for search results
   
- 
+chenJ -- 2019-10-25 22:33
+	- finished db_builder.py that will run and create tables from the csv file containing the basic information
+	- two tables are in the database:
+		-edits
+		-users
