@@ -60,7 +60,6 @@ def start():
     if 'user' in session: #keeps user logged in
           return redirect (url_for("story"))
     else: #for new user
-        flash("Please log in.")
         return render_template('landing.html')
 
 #checking user login credentials
@@ -151,12 +150,12 @@ def logout():
     flash("You have successfully logged out.")
     return render_template('landing.html')
 
-@app.route("/story")
+@app.route("/addstory")
 
 def readStory():
     if session.get('user') is None: #only go to this page if there's a user
         return redirect (url_for("start"))
-    return render_template('newstory.html')
+    return render_template('storycreator.html')
 
 
 @app.route("/editstory")
@@ -164,7 +163,14 @@ def readStory():
 def retrieve_latest(): #only go to this page if there's a user
     if session.get('user') is None:
         return redirect (url_for("start"))
-    return "get latest edit here"
+    return "Under construction."
+
+@app.route("/viewstory")
+
+def retrieve_latest(): #only go to this page if there's a user
+    if session.get('user') is None:
+        return redirect (url_for("start"))
+    return "Under construction."
 
 if __name__ == "__main__":
     app.debug = True

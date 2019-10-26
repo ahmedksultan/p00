@@ -8,18 +8,19 @@
   <body>
     <center>
       <font face = "courier new">
-        <h1>
-          <p> {% set messages = get_flashed_messages() %}
-            {% for message in messages %}
-            {{ message }}
-            {% endfor %}
-          </p>
-        </h1>
+        <h1> Log In </h1>
+          <font color = "#C11B17">
+            <p> {% set messages = get_flashed_messages() %}
+              {% for message in messages %}
+              {{ message }}
+              {% endfor %}
+            </p>
+          </font>
         <form action = "/auth">
-          Username<br>
+          <b> Username </b> <br>
           <input type = "username" name = "username">
           <br>
-          Password<br>
+          <b> Password </b> <br>
           <input type = "password" name = "password">
           <br><br>
           <input type = "submit" name = "sub1">

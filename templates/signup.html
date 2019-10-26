@@ -8,20 +8,22 @@
   <body>
     <center>
       <font face = "courier new">
-        <h1> Sign Up </h1>
-        <p> {% set messages = get_flashed_messages() %}
-          {% for message in messages %}
-          {{ message }}
-          {% endfor %}
-        </p>
+        <h1> <font color ="#52D017"> Sign Up </font> </h1>
+        <font color =  "#C11B17">
+          <p> {% set messages = get_flashed_messages() %}
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+          </p>
+        </font>
         <form action = "/signupcheck">
-          Username<br>
+          <b> Username  </b> <br>
           <input type = "username" name = "username">
           <br><br>
-          Password<br>
+          <b> Password </b> <br>
           <input type = "password" name = "password">
           <br><br>
-          Re-enter Password<br>
+          <b> Re-enter Password </b> <br>
           <input type = "password" name = "passwordagain">
           <br><br>
           <input type = "submit" name = "sub1" value = "Join FoldOver">

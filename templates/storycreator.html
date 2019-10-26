@@ -3,21 +3,25 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <p><a href="/mystories">My Stories</a> | <a href="/search">Search Stories</a> | <a href="/logout">Logout</a></p>
+    <font face= "courier new">
+      <p><a href="/mystories">My Stories</a> | <a href="/addstory">New Story</a> | <a href="/search">Search Stories</a> | <a href="/logout">Logout</a></p>
+    </font>
     <title> Story Creation </title>
   </head>
   <body>
     <center>
       <font face = "courier new">
-        <h1> Create a new story! </h1>
+        <font color = "#43BFC7">
+          <h1> Create a new story! </h1>
+        </font>
         <form>
-          <big> Story Title:  </big>
+          <big> <b> Story Title: </b>  </big>
           <br>
           <textarea cols = "50"
             <input type="text" name="story_title">
           </textarea>
           <br><br>
-          <big> Tags: </big>
+          <big> <b> Tags: </b> </big>
           <br>
           Tags should be formatted like this: #fantasy. Separate all tags with a space.
           <br><br>
@@ -25,7 +29,7 @@
             <input type="text" name="tags">
           </textarea>
           <br><br>
-          <big> First Entry: </big>
+          <big> <b> First Entry: </b> </big>
           <br>
           <textarea rows = "12" cols = "100"
             <input type="text" name="entry_1">
