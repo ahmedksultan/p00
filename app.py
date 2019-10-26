@@ -156,7 +156,8 @@ def logout():
 def readStory():
     if session.get('user') is None: #only go to this page if there's a user
         return redirect (url_for("start"))
-    return "Don't know how to do this yet."
+    return render_template('newstory.html')
+
 
 @app.route("/editstory")
 
