@@ -63,10 +63,10 @@ def start():  # landing page
         return render_template('landing.html')
 
 
-@app.route("/auth", methods=["GET," "POST"])
+@app.route("/auth", methods=["GET", "POST"])
 def authenticate():  # checking user login credentials
-    username = request.args['username']  # retrieve html form username and password
-    password = request.args['password']
+    username = request.form['username']  # retrieve html form username and password
+    password = request.form['password']
     if username == "":  # if there is no input
         flash("Please enter a username.")
         return render_template('landing.html')
@@ -84,11 +84,11 @@ def sign():  # go to sign up page
     return render_template('signup.html')
 
 
-@app.route("/signupcheck", methods=["GET," "POST"])  # check sign up information
+@app.route("/signupcheck", methods=["GET", "POST"])  # check sign up information
 def signcheck():
-    username = request.args['username']  # retrieve html form username and password
-    password = request.args['password']
-    password_again = request.args['passwordagain']
+    username = request.form['username']  # retrieve html form username and password
+    password = request.form['password']
+    password_again = request.form['passwordagain']
     if username == "":  # if there is no input
         flash("Please give a username.")
         return render_template('signup.html')
@@ -102,7 +102,7 @@ def signcheck():
         return render_template('signup.html')
     if password_again == password:  # check to make sure both passwords are the same
         if add_user(username, password, 0) == "done":
-            session['user'] = request.args['username']
+            session['user'] = request.form['username']
             return redirect(url_for("story"))  # if everything is correct, sign up and redirect to homepage
     else:  # otherwise flash error message
         flash("Password does not match.")
@@ -125,12 +125,12 @@ def find():  # search page
         return render_template('searchpage.html')
 
 
-@app.route("/searchresults", methods=["GET," "POST"])
+@app.route("/searchresults", methods=["GET", "POST"])
 def take():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect (url_for("start"))
-    keywords = request.args['keywords']  # retrieve search input
-    tags = request.args['tags']
+    keywords = request.form['keywords']  # retrieve search input
+    tags = request.form['tags']
     if keywords == "" and tags == "":
         return render_template('searchpage.html')
     return "done"
@@ -151,13 +151,13 @@ def plusStory():
         return redirect (url_for("start"))
     return render_template('storycreator.html')
 
-@app.route("/story", methods=["GET," "POST"])
+@app.route("/story", methods=["GET", "POST"])
 def see_entry():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect (url_for("start"))
-    title = request.args['story_title']
-    tags = request.args['tags']
-    first_entry = request.args['entry_1']
+    title = request.form['story_title']
+    tags = request.form['tags']
+    first_entry = request.form['entry_1']
     if title == "" or tags == "" or first_entry == "":
         flash("Fill in all the blanks to create a story.")
         return render_template('storycreator.html')
