@@ -10,7 +10,7 @@ app.secret_key = secret.main()
 
 DB_FILE = "data/foldoverdata.db"
 
-# =================== Part 1: Database Accessing Functions ==============
+# =================== Part 1: Database Accessing Functions ===================
 
 
 def add_user(user, passphrase, admin):  # function for adding a user into the users database
@@ -52,10 +52,11 @@ def check_sign(user):  # function for checking if a new user's username already 
         return "done"  # if username is not in database
 
 
-# =================== Part 2: Routes ==============
+# =================== Part 2: Routes ===================
 
+# landing page
 @app.route("/")
-def start():  # landing page
+def start():
     print(app)
     if 'user' in session: #keeps user logged in
           return redirect (url_for("story"))
@@ -63,8 +64,9 @@ def start():  # landing page
         return render_template('landing.html')
 
 
+# checking user login credentials
 @app.route("/auth", methods=["GET", "POST"])
-def authenticate():  # checking user login credentials
+def authenticate():
     username = request.form['username']  # retrieve html form username and password
     password = request.form['password']
     if username == "":  # if there is no input
@@ -79,17 +81,19 @@ def authenticate():  # checking user login credentials
         return render_template('landing.html')
 
 
+# go to sign up page
 @app.route("/signup")
-def sign():  # go to sign up page
+def sign():
     return render_template('signup.html')
 
 
-@app.route("/signupcheck", methods=["GET", "POST"])  # check sign up information
+# check sign up information
+@app.route("/signupcheck", methods=["GET", "POST"])
 def signcheck():
     username = request.form['username']  # retrieve html form username and password
     password = request.form['password']
     password_again = request.form['passwordagain']
-    if username == "":  # if there is no input
+    if username == "":  # if there is no input for username
         flash("Please give a username.")
         return render_template('signup.html')
     else:
@@ -109,66 +113,77 @@ def signcheck():
         return render_template('signup.html')
 
 
+# homepage, also lists all the stories edited by user
 @app.route("/mystories")
-def story():  # homepage
+def story():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     else:
         return render_template('homepage.html')
 
 
+# search page
 @app.route("/search")
-def find():  # search page
+def find():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     else:
         return render_template('searchpage.html')
 
 
+# search results page
 @app.route("/searchresults", methods=["GET", "POST"])
 def take():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect (url_for("start"))
     keywords = request.form['keywords']  # retrieve search input
     tags = request.form['tags']
-    if keywords == "" and tags == "":
+    if keywords == "" and tags == "":  # if there is no input, refresh page
         return render_template('searchpage.html')
     return "done"
 
 
+# log out
 @app.route("/logout")
 def logout():
     if session.get('user') is None:  # only allow logout if there is a user session running
         return redirect(url_for("start"))
     session.pop('user')  # remove user from session
     flash("You have successfully logged out.")
-    return render_template('landing.html')
+    return render_template('landing.html')  # redirects to login page
 
 
+# new story page
 @app.route("/addstory")
-def plusStory():
-    if session.get('user') is None: #only go to this page if there's a user
+def plus_story():
+    if session.get('user') is None: # only go to this page if there's a user
         return redirect (url_for("start"))
     return render_template('storycreator.html')
 
+
+# submission page of new story input
 @app.route("/story", methods=["GET", "POST"])
 def see_entry():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect (url_for("start"))
-    title = request.form['story_title']
+    title = request.form['story_title']  # retrieve story input
     tags = request.form['tags']
     first_entry = request.form['entry_1']
-    if title == "" or tags == "" or first_entry == "":
+    if title == "" or tags == "" or first_entry == "":  # if there is no input, flash error message and refresh page
         flash("Fill in all the blanks to create a story.")
         return render_template('storycreator.html')
     else: return "done"
 
+
+# editing page
 @app.route("/editstory")
 def retrieve_latest():  # only go to this page if there's a user
     if session.get('user') is None:
         return redirect (url_for("start"))
     return "Under construction."
 
+
+# read full story
 @app.route("/viewstory")
 def view(): #only go to this page if there's a user
     if session.get('user') is None:
