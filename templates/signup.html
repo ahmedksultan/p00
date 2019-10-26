@@ -3,28 +3,30 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <title> FoldOver </title>
+    <title> Join FoldOver </title>
   </head>
   <body>
     <center>
-      <h1> Sign Up </h1>
-      <p> {% set messages = get_flashed_messages() %}
-        {% for message in messages %}
-        {{ message }}
-        {% endfor %}
-      </p>
-      <form action = "/signupcheck">
-        Username<br>
-        <input type = "username" name = "username">
-        <br>
-        Password<br>
-        <input type = "password" name = "password">
-        <br>
-        Re-enter Password<br>
-        <input type = "password" name = "passwordagain">
-        <br>
-        <input type = "submit" name = "sub1" value = "Make Account">
-      </form>
+      <font face = "courier new">
+        <h1> Sign Up </h1>
+        <p> {% set messages = get_flashed_messages() %}
+          {% for message in messages %}
+          {{ message }}
+          {% endfor %}
+        </p>
+        <form action = "/signupcheck">
+          Username<br>
+          <input type = "username" name = "username">
+          <br><br>
+          Password<br>
+          <input type = "password" name = "password">
+          <br><br>
+          Re-enter Password<br>
+          <input type = "password" name = "passwordagain">
+          <br><br>
+          <input type = "submit" name = "sub1" value = "Join FoldOver">
+        </form>
+      </font>
     </center>
   </body>
 </html>
