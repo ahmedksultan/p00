@@ -153,3 +153,28 @@ chenJ -- 2019-10-24 08:25
 caoT -- 2019-10-25 07:52
   - attempted to create hovering dropdown menu for easy access to homepage, search page, and logout, but realized it required CSS
   - when creating an account, there's a function that now checks the database to see if the username already exists. If it does, flash a message for a new username.
+  -finding ways to circumvent the nasty asthetics caused by ban of css
+  
+alnasserA -- 2019-10-25 08:40
+	-working on text editor for user editing stories
+	-making editing text options with html tags saved in stories db and then actually displaying it when user is viewing full story 
+	-mechanisms of editing
+		-italicize
+		-left justify and right
+		-alignment
+		-underline
+		-bold
+		-bullets
+chenJ -- 2019-10-25 08:30
+	-populating databases
+	-making sure can write/read in certain routes
+	-using db builder to get data for app.py 
+	-app.py will contain all db modifers
+	-makes sure login and stuff is dependent on csv file
+zhengA -- 2019-10-25 08:45
+	-working on searching mechanism for tags, using LIKE command and searching substring using user input
+	-working on search mechanism for story titles, compiling list of all story titles and retrieving data for them
+	-joining lists for tags and titles if user inputs both
+	-html lists and links for search results
+  
+ 
