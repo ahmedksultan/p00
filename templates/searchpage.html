@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-
+{% extends 'template.html' %}
+{% block title %}
+Search
+{% endblock %}
 <html>
   <head>
     <meta charset="utf-8"/>
     <title> Search </title>
-    <font face = "courier new">
-      <p><a href="/mystories">My Stories</a> | <a href="/addstory">New Story</a> | <a href="/search">Search Stories</a> | <a href="/logout">Logout</a></p>
-    </font>
+    {% block body %}
   </head>
   <body bgcolor = "#FAE1DC">
     <center>
@@ -21,7 +22,7 @@
           </textarea>
           <br><br>
           <big><big> <b> Tags </b> </big></big><br>
-          <textarea cols = "50"
+          <textarea cols = "50">
             <input type = "search" name = "tags">
           </textarea>
           <br><br>
@@ -29,6 +30,7 @@
         </form>
         <br><br><br>
         <b> All Stories </b>
+        {% endblock %}
       </font>
     </center>
   </body>

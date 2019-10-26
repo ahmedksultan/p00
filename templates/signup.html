@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-
+{% extends 'template.html' %}
+{% block title %}
+Join FoldOver
+{% endblock %}
 <html>
   <head>
     <meta charset="utf-8"/>
@@ -10,11 +13,10 @@
       <font face = "courier new">
         <h1> <font color ="#F597EF"> Sign Up </font> </h1>
         <font color =  "#C11B17">
-          <p> {% set messages = get_flashed_messages() %}
+          {% set messages = get_flashed_messages() %}
             {% for message in messages %}
             {{ message }}
             {% endfor %}
-          </p>
         </font>
         <form action = "/signupcheck">
           <b> Username  </b> <br>

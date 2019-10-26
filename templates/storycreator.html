@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-
+{% extends 'template.html' %}
+{% block title %}
+Welcome!
+{% endblock %}
 <html>
   <head>
     <meta charset="utf-8"/>
-    <font face= "courier new">
-      <p><a href="/mystories">My Stories</a> | <a href="/addstory">New Story</a> | <a href="/search">Search Stories</a> | <a href="/logout">Logout</a></p>
+    {% block body %}
     </font>
     <title> Story Creation </title>
   </head>
@@ -23,7 +25,7 @@
           <br><br>
           <big> <b> Tags: </b> </big>
           <br>
-          Tags should be formatted like this: #fantasy. Separate all tags with a space.
+          Tags should be formatted with pound signs, ex: #fantasy. Separate all tags with a space.
           <br><br>
           <textarea cols = "50"
             <input type="text" name="tags">
@@ -37,6 +39,7 @@
           <br>
           <input type = "submit" name = "sub1">
         </form>
+        {% endblock %}
       </font>
     </center>
   </body>

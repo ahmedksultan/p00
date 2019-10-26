@@ -1,0 +1,20 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}{% endblock %} | FoldOver.io</title>
+  <body>
+      {% block header %}
+       <font face = "courier new">
+        <a href="/mystories">My Stories</a> | <a href="/addstory">New Story</a> | <a href="/search">Search Stories</a> |
+           <a href="/logout">Logout</a>
+    </font>
+      {% endblock %}
+      <br>
+      {% block body %}{% endblock %}<br />
+      {% block footer %}
+        <p>Copyright &copy; FoldOver.io 2019 <br>
+        Ayham Alnasser, Tiffany Cao, Jesse Chen & Amanda Zheng (Printer Carts)</p>
+      {% endblock %}
+  </body>
+</html>

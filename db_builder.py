@@ -15,7 +15,7 @@ c = db.cursor()               #facilitate db ops
 command = "CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT, stories_edited TEXT, is_admin BOOLEAN)"
 c.execute(command)
 
-csvfile = open('userdata.csv', newline='')
+csvfile = open('data/userdata.csv', newline='')
 reader = csv.DictReader(csvfile, delimiter = '\t')
 for row in reader:
 	command = 'INSERT INTO users VALUES(\"' + row['username'] + '\",\"' + row['password'] + '\",\"' + row['stories_edited'] + '\",' + row['is_admin'] + ')'
@@ -26,7 +26,7 @@ for row in reader:
 command = "CREATE TABLE IF NOT EXISTS edits (story_title TEXT, time_stamp BLOB, last_editor TEXT, tags TEXT, story TEXT)"
 c.execute(command)
 
-csvfile = open('editdata.csv', newline='')
+csvfile = open('data/editdata.csv', newline='')
 reader = csv.DictReader(csvfile, delimiter = '\t')
 
 for row in reader:
