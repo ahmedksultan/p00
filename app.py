@@ -140,17 +140,17 @@ def take():
         return redirect (url_for("start"))
     keywords = request.form['keywords']  # retrieve search input
     tags = request.form['tags']
-    if keywords == "" and tags == "":  # if there is no input, refresh page
+    if keywords == "" and tags == "":
         return render_template('searchpage.html')
     if len(tags) > 0:
-        tags = tags.split(" ");
+        tags = tags.strip().split(" ");
     if len(keywords) > 0:
-        keywords = keywords.split(" ");
+        keywords = keywords.strip().split(" ");
         command = "SELECT story_title FROM edits WHERE "
         count = 0
         while count < len(keywords):
             if count == len(keywords)-1:
-                command += "story_title LIKE \"%"+keywords[count] + "%\";"
+                command += "story_title LIKE \"%"+keywords[count] + "%\" "
             else:
                 command += "story_title LIKE \"%"+keywords[count] + "%\" OR "
             count += 1
@@ -159,24 +159,25 @@ def take():
         count = 0
         while count < len(tags):
             if count == len(tags)-1:
-                command+="tags LIKE \"%"+tags[count]+"%\";"
+                command+="tags LIKE \"%"+tags[count]+"%\" "
             else:
                 command+= "tags LIKE \"%"+tags[count]+"%\" OR "
             count += 1
     if len(keywords) > 0 and len(tags) > 0:
         count=0;
         while count < len(tags):
-            command +=" OR tags LIKE \"%"+tags[count]+"%\""
+            command +=" OR tags LIKE \"%"+tags[count]+"%\" "
             count += 1
-        command += ";"
+    command += ";"
     print(command)
     c.execute(command)
     searchResults=c.fetchall()
-    count=0
+    collection=[]
+    for item in searchResults:
+        collection.append(str(item))
     db.commit() #save changes
     db.close()  #close database
-    return render_template('searchresults.html')
-
+    return render_template('searchresults.html', key=request.form['keywords'], tagged=request.form['tags'], results=collection)
 
 # log out
 @app.route("/logout")
