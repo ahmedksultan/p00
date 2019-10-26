@@ -119,7 +119,7 @@ def story():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     else:
-        return render_template('homepage.html')
+        return render_template('homepage.html', name = session['user'])
 
 
 # search page
