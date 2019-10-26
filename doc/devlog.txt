@@ -169,10 +169,17 @@ zhengA -- 2019-10-25 08:45
 	-working on searching mechanism for tags, using LIKE command and searching substring using user input
 	-working on search mechanism for story titles, compiling list of all story titles and retrieving data for them
 	-intersecting lists for tags and titles if user inputs both
-	-html lists and links for search results
   
-chenJ -- 2019-10-25 22:33
+chenJ -- 2019-10-25 23:33
 	- finished db_builder.py that will run and create tables from the csv file containing the basic information
 	- two tables are in the database:
 		-edits
 		-users
+zhengA -- 2019-10-25 23:56
+	- Finalized a search mechanism and became PEP 8 compliant
+
+caoT -- 2019-10-26 00:00
+	- Incorporated Jinja2 templating into the header, footer, and title cards for the webpages
+
+alnasserA -- 2019-10-26 00:12
+	- Debugged our team's program issues over the virtual discord campfire and helped moved the project forward with GET a		and POST methods
