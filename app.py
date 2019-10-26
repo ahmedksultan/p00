@@ -57,16 +57,10 @@ def check_sign(user):  # function for checking if a new user's username already 
 @app.route("/")
 def start():  # landing page
     print(app)
-<<<<<<< HEAD
+
     if 'user' in session: #keeps user logged in
           return redirect (url_for("story"))
     else: #for new user
-=======
-    if 'user' in session:  # keeps user logged in
-        return redirect(url_for("story"))
-    else:  # for new user
-        flash("Please log in.")
->>>>>>> 1ffd2b4f7689a639ce61de446bf8ce6e5d6b7b26
         return render_template('landing.html')
 
 
