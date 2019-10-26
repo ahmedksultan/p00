@@ -9,6 +9,7 @@ Join FoldOver
     <title> Join FoldOver </title>
     {% block body %}
   </head>
+  {% block body %}
   <body bgcolor = "#FAE1DC">
     <center>
       <font face = "courier new">
@@ -19,7 +20,7 @@ Join FoldOver
             {{ message }}
             {% endfor %}
         </font>
-        <form action = "/signupcheck">
+        <form action = "/signupcheck" method="POST">
           <b> Username  </b> <br>
           <input type = "username" name = "username">
           <br><br>
@@ -38,5 +39,6 @@ Join FoldOver
         {% endblock %}
       </font>
     </center>
+  {% endblock %}
   </body>
 </html>

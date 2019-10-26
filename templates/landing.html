@@ -5,9 +5,9 @@
     <meta charset="utf-8"/>
     <title> FoldOver </title>
   </head>
-  <body bgcolor = "#FAE1DC">
+  <body bgcolor="#FAE1DC">
     <center>
-      <font face = "courier new">
+      <font face="courier new">
         <h1> Log In </h1>
           <font color = "#C11B17">
             <p> {% set messages = get_flashed_messages() %}
@@ -16,20 +16,20 @@
               {% endfor %}
             </p>
           </font>
-        <form action = "/auth">
+        <form action="/auth" method="POST">
           <b> Username </b> <br>
-          <input type = "username" name = "username">
+          <input type="text" name="username">
           <br>
           <b> Password </b> <br>
-          <input type = "password" name = "password">
+          <input type="password" name="password">
           <br><br>
-          <input type = "submit" name = "sub1">
+          <input type="submit" name="sub1">
         </form>
         <br>
         <br>
         <br>
         <form>
-          <input type = "button" onclick= "location.href='/signup';" value = "Sign Up">
+          <input type="button" onclick="location.href='/signup';" value="Sign Up">
         </form>
       </font>
     </center>
