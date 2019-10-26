@@ -63,7 +63,7 @@ def start():  # landing page
         return render_template('landing.html')
 
 
-@app.route("/auth")
+@app.route("/auth", methods=["GET," "POST"])
 def authenticate():  # checking user login credentials
     username = request.args['username']  # retrieve html form username and password
     password = request.args['password']
@@ -84,7 +84,7 @@ def sign():  # go to sign up page
     return render_template('signup.html')
 
 
-@app.route("/signupcheck")  # check sign up information
+@app.route("/signupcheck", methods=["GET," "POST"])  # check sign up information
 def signcheck():
     username = request.args['username']  # retrieve html form username and password
     password = request.args['password']
@@ -125,7 +125,7 @@ def find():  # search page
         return render_template('searchpage.html')
 
 
-@app.route("/searchresults")
+@app.route("/searchresults", methods=["GET," "POST"])
 def take():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect (url_for("start"))
@@ -146,11 +146,22 @@ def logout():
 
 
 @app.route("/addstory")
-def readStory():
+def plusStory():
     if session.get('user') is None: #only go to this page if there's a user
         return redirect (url_for("start"))
     return render_template('storycreator.html')
 
+@app.route("/story", methods=["GET," "POST"])
+def see_entry():
+    if session.get('user') is None:  # only go to this page if there's a user
+        return redirect (url_for("start"))
+    title = request.args['story_title']
+    tags = request.args['tags']
+    first_entry = request.args['entry_1']
+    if title == "" or tags == "" or first_entry == "":
+        flash("Fill in all the blanks to create a story.")
+        return render_template('storycreator.html')
+    else: return "done"
 
 @app.route("/editstory")
 def retrieve_latest():  # only go to this page if there's a user
@@ -159,7 +170,6 @@ def retrieve_latest():  # only go to this page if there's a user
     return "Under construction."
 
 @app.route("/viewstory")
-
 def view(): #only go to this page if there's a user
     if session.get('user') is None:
         return redirect (url_for("start"))
