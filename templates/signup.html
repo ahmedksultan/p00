@@ -7,6 +7,7 @@ Join FoldOver
   <head>
     <meta charset="utf-8"/>
     <title> Join FoldOver </title>
+    {% block body %}
   </head>
   {% block body %}
   <body bgcolor = "#FAE1DC">
@@ -35,6 +36,7 @@ Join FoldOver
         <form>
           <input type = "button" onclick= "location.href='/';" value = "Back to log in">
         </form>
+        {% endblock %}
       </font>
     </center>
   {% endblock %}
