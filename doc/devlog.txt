@@ -158,13 +158,7 @@ caoT -- 2019-10-25 07:52
 alnasserA -- 2019-10-25 08:40
 	-working on text editor for user editing stories
 	-making editing text options with html tags saved in stories db and then actually displaying it when user is viewing full story 
-	-mechanisms of editing
-		-italicize
-		-left justify and right
-		-alignment
-		-underline
-		-bold
-		-bullets
+	-making all the python follow PEP 8 standards
 chenJ -- 2019-10-25 08:30
 	-populating databases
 	-making sure can write/read in certain routes
