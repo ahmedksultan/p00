@@ -8,7 +8,7 @@ username = ""
 password = ""
 app.secret_key = secret.main()
 
-DB_FILE = "foldoverdata.db"
+DB_FILE = "data/foldoverdata.db"
 
 # =================== Part 1: Database Accessing Functions ==============
 
@@ -57,7 +57,6 @@ def check_sign(user):  # function for checking if a new user's username already 
 @app.route("/")
 def start():  # landing page
     print(app)
-
     if 'user' in session: #keeps user logged in
           return redirect (url_for("story"))
     else: #for new user
@@ -147,7 +146,6 @@ def logout():
 
 
 @app.route("/addstory")
-
 def readStory():
     if session.get('user') is None: #only go to this page if there's a user
         return redirect (url_for("start"))
