@@ -13,8 +13,13 @@ Welcome!
       <font face="courier new">
         Welcome, {{ name }}!
         <h1> <font color = "#736AFF"> My Stories </font> </h1>
-          {% endblock %}
       </font>
     </center>
+    {%for item in storycoll%}
+    <ul>
+      <li>{{item}}</li>
+    </ul>
+    {% endfor %}
   </body>
+  {% endblock %}
 </html>
