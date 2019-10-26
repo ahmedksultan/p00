@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from data import secret
 import sqlite3  # enable control of an sqlite database
@@ -54,18 +53,16 @@ def check_sign(user):  # function for checking if a new user's username already 
 
 # =================== Part 2: Routes ===================
 
-# landing page
-@app.route("/")
+@app.route("/")  # landing page
 def start():
     print(app)
-    if 'user' in session: #keeps user logged in
-          return redirect (url_for("story"))
-    else: #for new user
+    if 'user' in session:  # keeps user logged in
+        return redirect(url_for("story"))
+    else:  # for new users
         return render_template('landing.html')
 
 
-# checking user login credentials
-@app.route("/auth", methods=["GET", "POST"])
+@app.route("/auth", methods=["GET", "POST"])  # checking user login credentials
 def authenticate():
     username = request.form['username']  # retrieve html form username and password
     password = request.form['password']
@@ -81,14 +78,12 @@ def authenticate():
         return render_template('landing.html')
 
 
-# go to sign up page
-@app.route("/signup")
+@app.route("/signup")  # go to sign up page
 def sign():
     return render_template('signup.html')
 
 
-# check sign up information
-@app.route("/signupcheck", methods=["GET", "POST"])
+@app.route("/signupcheck", methods=["GET", "POST"])  # check sign up information
 def signcheck():
     username = request.form['username']  # retrieve html form username and password
     password = request.form['password']
@@ -113,17 +108,15 @@ def signcheck():
         return render_template('signup.html')
 
 
-# homepage, also lists all the stories edited by user
-@app.route("/mystories")
+@app.route("/mystories")  # homepage, also lists all the stories edited by user
 def story():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     else:
-        return render_template('homepage.html', name = session['user'])
+        return render_template('homepage.html', name=session['user'])
 
 
-# search page
-@app.route("/search")
+@app.route("/search")  # search page
 def find():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
@@ -131,56 +124,57 @@ def find():
         return render_template('searchpage.html')
 
 
-# search results page
-@app.route("/searchresults", methods=["GET", "POST"])
+@app.route("/searchresults", methods=["GET", "POST"])  # search results page
 def take():
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     if session.get('user') is None:  # only go to this page if there's a user
-        return redirect (url_for("start"))
+        return redirect(url_for("start"))
     keywords = request.form['keywords']  # retrieve search input
     tags = request.form['tags']
     if keywords == "" and tags == "":
         return render_template('searchpage.html')
     if len(tags) > 0:
-        tags = tags.strip().split(" ");
+        tags = tags.strip().split(" ")
     if len(keywords) > 0:
-        keywords = keywords.strip().split(" ");
+        keywords = keywords.strip().split(" ")
         command = "SELECT story_title FROM edits WHERE "
         count = 0
         while count < len(keywords):
             if count == len(keywords)-1:
-                command += "story_title LIKE \"%"+keywords[count] + "%\" "
+                command += "story_title LIKE \"%" + keywords[count] + "%\" "
             else:
-                command += "story_title LIKE \"%"+keywords[count] + "%\" OR "
+                command += "story_title LIKE \"%" + keywords[count] + "%\" OR "
             count += 1
     if len(tags) > 0 and len(keywords) == 0:
         command = "SELECT story_title FROM edits WHERE "
         count = 0
         while count < len(tags):
-            if count == len(tags)-1:
-                command+="tags LIKE \"%"+tags[count]+"%\" "
+            if count == len(tags) - 1:
+                command += "tags LIKE \"%" + tags[count] + "%\" "
             else:
-                command+= "tags LIKE \"%"+tags[count]+"%\" OR "
+                command += "tags LIKE \"%" + tags[count] + "%\" OR "
             count += 1
     if len(keywords) > 0 and len(tags) > 0:
-        count=0;
+        count = 0
         while count < len(tags):
-            command +=" OR tags LIKE \"%"+tags[count]+"%\" "
+            command += " OR tags LIKE \"%"+tags[count]+"%\" "
             count += 1
     command += ";"
     print(command)
     c.execute(command)
-    searchResults=c.fetchall()
+    search_results = c.fetchall()
     collection=[]
-    for item in searchResults:
+    for item in search_results:
         collection.append(str(item))
-    db.commit() #save changes
-    db.close()  #close database
-    return render_template('searchresults.html', key=request.form['keywords'], tagged=request.form['tags'], results=collection)
+    db.commit()  # save changes
+    db.close()  # close database
+    return render_template('searchresults.html', key=request.form['keywords'],
+                                                 tagged=request.form['tags'],
+                                                 results=collection)
 
-# log out
-@app.route("/logout")
+
+@app.route("/logout")  # log out
 def logout():
     if session.get('user') is None:  # only allow logout if there is a user session running
         return redirect(url_for("start"))
@@ -189,41 +183,38 @@ def logout():
     return render_template('landing.html')  # redirects to login page
 
 
-# new story page
-@app.route("/addstory")
+@app.route("/addstory")  # new story page
 def plus_story():
-    if session.get('user') is None: # only go to this page if there's a user
-        return redirect (url_for("start"))
+    if session.get('user') is None:  # only go to this page if there's a user
+        return redirect(url_for("start"))
     return render_template('storycreator.html')
 
 
-# submission page of new story input
-@app.route("/story", methods=["GET", "POST"])
+@app.route("/story", methods=["GET", "POST"])  # submission page of new story input
 def see_entry():
     if session.get('user') is None:  # only go to this page if there's a user
-        return redirect (url_for("start"))
+        return redirect(url_for("start"))
     title = request.form['story_title']  # retrieve story input
     tags = request.form['tags']
     first_entry = request.form['entry_1']
     if title == "" or tags == "" or first_entry == "":  # if there is no input, flash error message and refresh page
         flash("Fill in all the blanks to create a story.")
         return render_template('storycreator.html')
-    else: return "done"
+    else:
+        return "done"
 
 
-# editing page
-@app.route("/editstory")
+@app.route("/editstory")  # editing page
 def retrieve_latest():  # only go to this page if there's a user
     if session.get('user') is None:
-        return redirect (url_for("start"))
+        return redirect(url_for("start"))
     return "Under construction."
 
 
-# read full story
-@app.route("/viewstory")
-def view(): #only go to this page if there's a user
+@app.route("/viewstory")  # read full story
+def view():  # only go to this page if there's a user
     if session.get('user') is None:
-        return redirect (url_for("start"))
+        return redirect(url_for("start"))
     return "Under construction."
 
 
