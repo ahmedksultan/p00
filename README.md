@@ -9,5 +9,6 @@
 ## Tiffany - HTML & Jinja Frontend <br>
        - Modifying UI and UX for the website 
        - Incorporates Jesse and Amanda's backend into the frontend 
-## Jesse - Backend SQL<br>
-      - Making a database builder file and csvs to facililate external output into the program's input
+## Jesse - Backend SQL <br>
+      - Making a database builder file and combined with app.py
+      - Made csv files to facililate external output into the program's input
