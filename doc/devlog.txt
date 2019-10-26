@@ -174,7 +174,7 @@ chenJ -- 2019-10-25 08:30
 zhengA -- 2019-10-25 08:45
 	-working on searching mechanism for tags, using LIKE command and searching substring using user input
 	-working on search mechanism for story titles, compiling list of all story titles and retrieving data for them
-	-joining lists for tags and titles if user inputs both
+	-intersecting lists for tags and titles if user inputs both
 	-html lists and links for search results
   
  
