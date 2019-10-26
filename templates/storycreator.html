@@ -8,16 +8,32 @@
   </head>
   <body>
     <center>
-      <h1> Create a new story! </h1>
-      <form action="/createStory">
-        Story Title: <input type="text" name="story_title">
-        First Entry: <input type="text" name="entry_1"> <!-- ADD WORD LIMIT?? !-->
-        Tags:
-        <select>
-          <option>Sci-Fi</option>
-          <option>Comedy</option>
-        </select>
-      </form>
+      <font face = "courier new">
+        <h1> Create a new story! </h1>
+        <form>
+          <big> Story Title:  </big>
+          <br>
+          <textarea cols = "50"
+            <input type="text" name="story_title">
+          </textarea>
+          <br><br>
+          <big> Tags: </big>
+          <br>
+          Tags should be formatted like this: #fantasy. Separate all tags with a space.
+          <br><br>
+          <textarea cols = "50"
+            <input type="text" name="tags">
+          </textarea>
+          <br><br>
+          <big> First Entry: </big>
+          <br>
+          <textarea rows = "12" cols = "100"
+            <input type="text" name="entry_1">
+          </textarea>
+          <br>
+          <input type = "submit" name = "sub1">
+        </form>
+      </font>
     </center>
   </body>
 </html>

@@ -7,28 +7,30 @@
   </head>
   <body>
     <center>
-      <h1>
-        <p> {% set messages = get_flashed_messages() %}
-          {% for message in messages %}
-          {{ message }}
-          {% endfor %}
-        </p>
-      </h1>
-      <form action = "/auth">
-        Username<br>
-        <input type = "username" name = "username">
+      <font face = "courier new">
+        <h1>
+          <p> {% set messages = get_flashed_messages() %}
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+          </p>
+        </h1>
+        <form action = "/auth">
+          Username<br>
+          <input type = "username" name = "username">
+          <br>
+          Password<br>
+          <input type = "password" name = "password">
+          <br><br>
+          <input type = "submit" name = "sub1">
+        </form>
         <br>
-        Password<br>
-        <input type = "password" name = "password">
         <br>
-        <input type = "submit" name = "sub1">
-      </form>
-      <br>
-      <br>
-      <br>
-      <form>
-        <input type = "button" onclick= "location.href='/signup';" value = "Sign Up">
-      </form>
+        <br>
+        <form>
+          <input type = "button" onclick= "location.href='/signup';" value = "Sign Up">
+        </form>
+      </font>
     </center>
   </body>
 </html>
