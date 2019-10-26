@@ -162,7 +162,7 @@ def retrieve_latest():  # only go to this page if there's a user
 
 @app.route("/viewstory")
 
-def retrieve_latest(): #only go to this page if there's a user
+def view(): #only go to this page if there's a user
     if session.get('user') is None:
         return redirect (url_for("start"))
     return "Under construction."
