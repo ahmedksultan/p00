@@ -6,14 +6,23 @@ Search Results
 <html>
   <head>
     <meta charset="utf-8"/>
-    <title> Search Results</title>
-    <h1>Search Results Keywords: {{key}} Tags: {{tagged}}</h1>
     {% block body %}
-    {%for item in results%}
-    <ul>
-      <li>{{item[2:-3]}}</li>
-    </ul>
-    {% endfor %}
-    {% endblock %}
+  </head>
+  <body bgcolor = "#FAE1DC">
+    <center>
+      <font face = "courier new">
+          <h1> <font color = "#3BB9FF"> Search Results </font> </h1>
+            <h2><br>Keywords: {{key}}
+            <br>Tags: {{tagged}}</h2>
+        </center>
+            {%for item in results%}
+            <ul>
+              <li>{{item[2:-3]}}</li>
+            </ul>
+            {% endfor %}
+            <center>
+          {% endblock %}
+      </font>
+    </center>
   </head>
 </html>
