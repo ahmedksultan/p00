@@ -59,27 +59,46 @@ def check_sign(user):  # function for checking if a new user's username already 
         return "done"  # if username is not in database
 
 
-def edit_name(old_user, new_user):  # function for checking if a new user's username already exists in database
+def check_pwd(user, pwd):  # function for checking if a password is correct
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    ip=request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    db = sqlite3.connect(DB_FILE)  # open database
+    c = db.cursor()
+    command = "SELECT password FROM users WHERE username = \"" + user + "\""  # check if password is in database for the username
+    cur = c.execute(command)
+    temp = cur.fetchone()
+    if temp:  # if password is in database...
+        return "done"
+    else:
+        return "Old password is incorrect."  # if username is not in database
+
+def edit_name(old_user, new_user):  # function for editing the username
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove()
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    command = "UPDATE users SET username = \"" + new_user + "\" WHERE username = \"" + old_user + "\""  # check if username is already in database
+    command = "UPDATE users SET username = \"" + new_user + "\" WHERE username = \"" + old_user + "\";"  # update username
     c.execute(command)
-    return "done"  # if username is not in database
+    db.commit()
+    db.close()
+    return "done"
 
 
-def edit_pwd(old_pwd, new_pwd):  # function for checking if a new user's username already exists in database
+def edit_pwd(old_pwd, new_pwd):  # function for changing password
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove()
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    command = "UPDATE users SET password = \"" + new_pwd + "\" WHERE password = \"" + old_pwd + "\""  # check if username is already in database
+    command = "UPDATE users SET password = \"" + new_pwd + "\" WHERE password = \"" + old_pwd + "\""  # update password
     c.execute(command)
+    db.commit()
+    db.close()
     return "done"  # if username is not in database
 
 
@@ -309,7 +328,7 @@ def queue():
         waitlist.append(request.environ["REMOTE_ADDR"])
     if waitlist[0]!=ip:
         return "Please refresh after "+str(waitlist.index(p))+" minutes as someone is currently editing."
-    #another "if"? 
+    #another "if"?
     else:
         db = sqlite3.connect(DB_FILE)
         command = "SELECT story FROM edits"
@@ -346,6 +365,7 @@ def view():  # only go to this page if there's a user
             #commands and stuff
             return render_template("viewstory.html", title = title, entire_story = entire_story)
 
+
 @app.route("/updateprofile")
 def update():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
@@ -356,6 +376,7 @@ def update():
         return redirect(url_for("start"))
     else:
         return render_template('editprofile.html')
+
 
 @app.route("/updateprofilecheck", methods=["GET", "POST"])
 def update_check():
@@ -368,8 +389,9 @@ def update_check():
     username = request.form['new_username']
     password = request.form['new_password']
     password_again = request.form['passwordagain']
-    if(request.form.get('change_user')):
-        if (username != None and old_username == "") or (username == "" and old_username != None):
+    print(session['user'])   # if user wants to change username
+    if (request.form.get('change_user')):
+        if (username != None and old_username == "") or (username == "" and old_username != None):  #check if both fields are inputted
             flash("Please fill in both your old and new username to update your profile.")
             return render_template('editprofile.html')
         if (username == old_username):
@@ -381,16 +403,16 @@ def update_check():
                 flash("" + check)
                 return render_template('editprofile.html')
             else:  #otherwise, change username
-                edit_name(old_username, username)
+                print(edit_name(old_username, username))
                 session['user'] = username  # change session name
                 if not(request.form.get('change_pwd')):
-                    flash("Your profile has been updated.")
+                    flash("Your username has been updated.")
                     return render_template('editprofile.html')
         else:
             flash("Old username is incorrect.")
             return render_template('editprofile.html')
-    if(request.form.get('change_pwd')):
-        if (password != None and old_password == "") or (password == "" and old_password != None):
+    if(request.form.get('change_pwd')):   # if user wants to change username
+        if (password != None and old_password == "") or (password == "" and old_password != None):  #check if both fields are inputted
             flash("Please fill in both your old and new information to update your profile.")
             return render_template('editprofile.html')
         if (password == old_password):
@@ -399,9 +421,14 @@ def update_check():
         if password != password_again:
             flash("Password does not match.")
             return render_template('editprofile.html')
+        check = check_pwd(session['user'], password)  # check if old password is correct
+        if(check != "done"):
+            flash("" + check)
+            return render_template('editprofile.html')
         else:
-            edit_pwd(old_pwd, new_pwd)
-            return render_template('homepage.html')
+            edit_pwd(old_password, password)  # change password
+            flash("Login with the new password.")  # go back to login
+            return render_template('landing.html')
     else:
         return render_template('editprofile.html')
 
