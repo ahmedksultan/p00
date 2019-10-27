@@ -328,7 +328,6 @@ def queue():
         waitlist.append(request.environ["REMOTE_ADDR"])
     if waitlist[0]!=ip:
         return "Please refresh after "+str(waitlist.index(p))+" minutes as someone is currently editing."
-    #another "if"?
     else:
         db = sqlite3.connect(DB_FILE)
         c=db.cursor()
@@ -336,9 +335,12 @@ def queue():
         c.execute(command)
         all_edits = c.fetchall()
         all_edits = str(all_edits[0])[2:-3]
-        all_edits_list = all_edits.split("|")
-        previous = all_edits_list[-1]
-        return render_template("storyeditor.html", previous_edit = previous)
+        if all_edits.count("|") >= 200:
+            return render_template("viewstory.html", title = request.args.get('value'), entire_story = all_edits)
+        else:
+            all_edits_list = all_edits.split("|")
+            previous = all_edits_list[-1]
+            return render_template("storyeditor.html", previous_edit = previous)
 #def retrieve_latest():  # only go to this page if there's a user
 #    if session.get('user') is None:
 #        return redirect(url_for("start"))
@@ -404,7 +406,9 @@ def close():
             break
     c.execute(command)
     view=str(c.fetchall()[0])[2:-3]
-    return view
+    db.commit()
+    db.close()
+    return render_template("closestory.html", title = request.args.get('value'), entire_story = view)
 
 #@app.route("/tagedit")
 #@app.route("/delete")
