@@ -17,7 +17,7 @@ Edit a story!
 			<form action = "/viewstory" method = "POST">
 				<big><b> Previous Entry: </b></big>
 				<br>
-				{{ previous_edit }}
+				{{previous_edit | safe}}
 				<br><br>
 				<big><b> Your Entry: </b></big>
 				<br>

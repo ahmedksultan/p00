@@ -17,7 +17,7 @@ View a story!
 			<h3> {{ title }} </h3>
 			<br>
 			<br>
-			{{ entire_story }}
+			{{ entire_story | safe }}
 			<br>
 			{% endblock %}
 		</center>

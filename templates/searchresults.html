@@ -17,7 +17,11 @@ Search Results
         </center>
             {%for item in results%}
             <ul>
-              <li><a href="/editstory?value={{item[2: -3]}}">{{item[2:-3]}}</a></li>
+              <li><a href="/editstory?value={{item[2: -3]}}">{{item[2:-3]}}</a>
+                <input type="button" onclick="location.href='/close?value={{item[2:-3]}}';" value="Close Story" name={{item[2:-3]}}>
+                <input type="button" onclick="location.href='/tagedit?value={{item[2:-3]}}';" value="Edit Tags" name={{item[2:-3]}}>
+                <input type="button" onclick="location.href='/delete?value={{item[2:-3]}}';" value="Delete Story" name={{item[2:-3]}}>
+              </li>
             </ul>
             {% endfor %}
             <center>

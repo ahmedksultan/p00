@@ -285,10 +285,11 @@ def queue():
         waitlist.append(request.environ["REMOTE_ADDR"])
     if waitlist[0]!=ip:
         return "Please refresh after "+str(waitlist.index(p))+" minutes as someone is currently editing."
-    #another "if"? 
+    #another "if"?
     else:
         db = sqlite3.connect(DB_FILE)
-        command = "SELECT story FROM edits"
+        c=db.cursor()
+        command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";"
         c.execute(command)
         all_edits = c.fetchall()
         all_edits = str(all_edits[0])[2:-3]
@@ -307,7 +308,6 @@ def view():  # only go to this page if there's a user
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
-    waitlist.remove(ip)
     if session.get('user') is None:
         return redirect(url_for("start"))
     else:
@@ -321,7 +321,50 @@ def view():  # only go to this page if there's a user
             #Updates Database
             #commands and stuff
             return render_template("viewstory.html", title = title, entire_story = entire_story)
+@app.route("/fullstory")
+def full():  # only go to this page if there's a user
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    ip=request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    if session.get('user') is None:
+        return redirect(url_for("start"))
+    else:
+        command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";"
+        c.execute(command)
+        title=request.args.get('value')
+        all_edits = c.fetchall()
+        all_edits = str(all_edits[0])[2:-3]
+        return render_template("viewstory.html", title = title, entire_story = all_edits)
+@app.route("/close")
+def close():
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    ip=request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    command="SELECT story_title FROM edits;"
+    c.execute(command)
+    stories = c.fetchall()
+    for story in stories:
+        story=str(story)[2:-3]
+        if story in request.args.get('value'):
+            command="SELECT story FROM edits WHERE story_title = "+"\""+story+"\";"
+            c.execute(command)
+            view=str(c.fetchall()[0])[2:-3]
+            command="UPDATE edits SET story= \""+view+"||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\""+ " WHERE story_title ="+"\""+story+"\";"
+            c.execute(command)
+            command="SELECT story FROM edits WHERE story_title = "+"\""+story+"\";"
+            break
+    c.execute(command)
+    view=str(c.fetchall()[0])[2:-3]
+    return view
 
+#@app.route("/tagedit")
+#@app.route("/delete")
 
 if __name__ == "__main__":
     app.debug = True
