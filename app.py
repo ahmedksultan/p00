@@ -419,13 +419,12 @@ def edit_tags():
     command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
     print(command)
     c.execute(command)
-    tags = c.fetchall()
+    tags = str(c.fetchall())[3:-4]
     tag_coll = list()
-    for tag in tags:
-        print(tag, str(tag)[2:-3])
-        tag_coll.append(str(tag)[2:-3])
+    for tag in tags.split(' '):
+        print(tag, str(tag))
+        tag_coll.append(str(tag))
     print(tag_coll)
-    if not len(tag_coll):
     return render_template("tagedit.html", tag_list=tag_coll, story_title=story_name)
 
 
@@ -450,9 +449,9 @@ def delete_tag():
     command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
     print(command)
     c.execute(command)
-    tags = c.fetchall()
+    tags = str(c.fetchall())
     tag_coll = list()
-    for tag in tags:
+    for tag in tags.split(' '):
         print(tag, str(tag)[2:-3])
         tag_coll.append(str(tag)[2:-3])
     print(tag_coll, tag_name[2:-3])
