@@ -268,12 +268,11 @@ def displayAll():
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    command="SELECT story_title from edits"
+    command="SELECT story_title from edits" #get all stories
     c.execute(command)
     all=c.fetchall()
-    count = 0
     collection=[]
-    for item in all:
+    for item in all: #turn every item into a string and put it into a list to display
         if str(item) not in collection:
             collection.append(str(item)[2:-3])
     sorted(collection)
@@ -325,25 +324,25 @@ def see_entry():
 
 @app.route("/editstory")  # editing page
 def queue():
-    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)#finds ip
     ip=request.environ["REMOTE_ADDR"]
     if len(waitlist)==0 and ip not in waitlist:
-        waitlist.append(request.environ["REMOTE_ADDR"])
+        waitlist.append(request.environ["REMOTE_ADDR"]) #if ip is not in waitlist, add it
     if waitlist[0]!=ip:
-        return "Please refresh after "+str(waitlist.index(p))+" minutes as someone is currently editing."
+        return "Please refresh after "+str(waitlist.index(p))+" minutes as someone is currently editing." #calculates place in queue and gives estimate wait time
     else:
         db = sqlite3.connect(DB_FILE)
         c=db.cursor()
-        command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";"
+        command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";" #find the text of a specified story title
         c.execute(command)
         all_edits = c.fetchall()
-        all_edits = str(all_edits)
-        if all_edits.count("|") >= 200:
-            return render_template("viewstory.html", title = request.args.get('value'), entire_story = all_edits)
+        all_edits = str(all_edits)[3:-4] #format
+        if all_edits.count("|") >= 200: #if no more edits allowed
+            return render_template("viewstory.html", title = request.args.get('value'), entire_story = all_edits) #go straight to viewing full story
         else:
-            all_edits_list = all_edits.split("|")
+            all_edits_list = all_edits.split("|") #show text without seperating pipes
             previous = all_edits_list[-1]
-            return render_template("storyeditor.html", previous_edit = previous)
+            return render_template("storyeditor.html", previous_edit = previous) #if can edit, go to edit page
 #def retrieve_latest():  # only go to this page if there's a user
 #    if session.get('user') is None:
 #        return redirect(url_for("start"))
@@ -352,7 +351,7 @@ def queue():
 
 @app.route("/viewstory")  # read full story
 def view():  # only go to this page if there's a user
-    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)#remove from queue
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
@@ -371,7 +370,7 @@ def view():  # only go to this page if there's a user
             return render_template("viewstory.html", title = title, entire_story = entire_story)
 @app.route("/fullstory")
 def full():  # only go to this page if there's a user
-    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
@@ -380,42 +379,46 @@ def full():  # only go to this page if there's a user
     if session.get('user') is None:
         return redirect(url_for("start"))
     else:
-        command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";"
+        command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";"#display requested story
         c.execute(command)
         title=request.args.get('value')
         all_edits = c.fetchall()
-        all_edits = str(all_edits[0])[2:-3]
+        try:
+            all_edits = str(all_edits[0])[2:-3]
+        except IndexError:
+            return render_template("deleted.html")
         return render_template("viewstory.html", title = title, entire_story = all_edits)
 @app.route("/close")
 def close():
-    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command="SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";"
+    command="SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";" #find the whole story
     c.execute(command)
-    view=str(c.fetchall()[0])[2:-3]
+    view=str(c.fetchall()[0])[2:-3] #format into string
     command="UPDATE edits SET story= \""+view+"||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\""+ " WHERE story_title ="+"\""+request.args.get('value')+"\";"
+    #add 200 pipes to end editing
     c.execute(command)
-    command="SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";"
+    command="SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";" #get new story now
     c.execute(command)
     view=str(c.fetchall()[0])[2:-3]
     db.commit()
     db.close()
-    return render_template("closestory.html", title = request.args.get('value'), entire_story = view)
+    return render_template("closestory.html", title = request.args.get('value'), entire_story = view)#displays story by replacing all | with empty string
 
 #@app.route("/tagedit")
 @app.route("/delete")
 def delete():
-    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command="DELETE FROM edits WHERE story_title = \""+request.args.get('value')+"\";"
+    command="DELETE FROM edits WHERE story_title = \""+request.args.get('value')+"\";" #delete entire row from edits
     c.execute(command)
     db.commit()
     db.close()
@@ -427,7 +430,7 @@ def update():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     else:

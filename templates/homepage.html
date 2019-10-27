@@ -16,8 +16,12 @@ Welcome!
           <h1> <font color = "#736AFF"> My Stories </font> </h1>
       </center>
         {%for item in storycoll%}
-        <ul>
-          <li><a href="/fullstory?value={{item}}">{{item}}</a></li>
+          <ul>
+              <li><a href="/fullstory?value={{item|urlencode()}}">{{item}}</a>
+                <input type="button" onclick="location.href='/close?value={{item|urlencode()}}';" value="Close Story" name={{item}}>
+                <input type="button" onclick="location.href='/tagedit?value={{item|urlencode()}}';" value="Edit Tags" name={{item}}>
+                <input type="button" onclick="location.href='/delete?value={{item|urlencode()}}';" value="Delete Story" name={{item}}>
+              </li>
         </ul>
         {% endfor %}
         <br>
