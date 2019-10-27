@@ -171,12 +171,12 @@ def take():
             command += " OR tags LIKE \"%"+tags[count]+"%\" " #loop through to find stories that containted those tags
             count += 1
     command += ";"
-    print(command)
     c.execute(command)
     search_results = c.fetchall() #get the results of the selection
     collection=[]
     for item in search_results:
-        collection.append(str(item)) #make tuple into strings
+        if str(item) not in collection:
+            collection.append(str(item)) #make tuple into strings
     db.commit()  # save changes
     db.close()  # close database
     return render_template('searchresults.html', key=request.form['keywords'],
