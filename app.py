@@ -27,7 +27,7 @@ def check_user(user, pwd):  # function for checking if a user's login credential
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     command = "SELECT password FROM users WHERE username = \"" + user + "\""  # check if username is in database
@@ -47,7 +47,7 @@ def check_sign(user):  # function for checking if a new user's username already 
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     command = "SELECT password FROM users WHERE username = \"" + user + "\""  # check if username is already in database
@@ -67,7 +67,7 @@ def start():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     if 'user' in session:  # keeps user logged in
         return redirect(url_for("story"))
     else:  # for new users
@@ -79,7 +79,7 @@ def authenticate():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     username = request.form['username']  # retrieve html form username and password
     password = request.form['password']
     if username == "":  # if there is no input
@@ -104,7 +104,7 @@ def signcheck():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     username = request.form['username']  # retrieve html form username and password
     password = request.form['password']
     password_again = request.form['passwordagain']
@@ -133,7 +133,7 @@ def story():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     else:
@@ -154,7 +154,7 @@ def find():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     else:
@@ -166,7 +166,7 @@ def take():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     if session.get('user') is None:  # only go to this page if there's a user
@@ -219,7 +219,7 @@ def displayAll():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     command="SELECT story_title from edits"
@@ -239,7 +239,7 @@ def logout():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     if session.get('user') is None:  # only allow logout if there is a user session running
         return redirect(url_for("start"))
     session.pop('user')  # remove user from session
@@ -252,7 +252,7 @@ def plus_story():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     return render_template('storycreator.html')
@@ -263,7 +263,7 @@ def see_entry():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     title = request.form['story_title']  # retrieve story input
@@ -296,7 +296,7 @@ def view():  # only go to this page if there's a user
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     waitlist.remove(ip)
     if session.get('user') is None:
         return redirect(url_for("start"))
