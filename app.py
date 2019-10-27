@@ -6,7 +6,8 @@ app = Flask(__name__)
 username = ""
 password = ""
 app.secret_key = secret.main()
-
+waitlist= []
+editing=False;
 DB_FILE = "data/foldoverdata.db"
 
 # =================== Part 1: Database Accessing Functions ===================
@@ -228,10 +229,17 @@ def see_entry():
 
 
 @app.route("/editstory")  # editing page
-def retrieve_latest():  # only go to this page if there's a user
-    if session.get('user') is None:
-        return redirect(url_for("start"))
-    return "Under construction."
+def queue():
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    ip=request.environ["REMOTE_ADDR"]
+    if(len(waitlist)==0 and ip not in waitlist):
+        editing=True;
+        waitlist.append(request.environ["REMOTE_ADDR"])
+    return str(len(waitlist))
+#def retrieve_latest():  # only go to this page if there's a user
+#    if session.get('user') is None:
+#        return redirect(url_for("start"))
+#    return "Under construction."
 
 
 @app.route("/viewstory")  # read full story
