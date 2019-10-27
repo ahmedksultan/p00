@@ -193,7 +193,8 @@ def displayAll():
     count = 0
     collection=[]
     for item in all:
-        collection.append(str(item)[2:-3])
+        if str(item) not in collection:
+            collection.append(str(item)[2:-3])
     db.commit()  # save changes
     db.close()
     return render_template('allstory.html', display=collection)
