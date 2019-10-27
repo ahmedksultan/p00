@@ -1,32 +1,24 @@
 <!DOCTYPE html>
 {% extends 'template.html' %}
 {% block title %}
-Edit a story!
+View a story!
 {% endblock %}
 <html>
 	<head>
 		<meta charset="utf-8">
 		{% block body %}
-		<title> Story Editing </title>
+		<title> Story Viewing </title>
 	</head>
 	<body bgcolor = "#FAE1DC">
 		<center>
 			<font face = "courier new">
-				<h1> Edit a story! </h1>
+				<h1> View a story! </h1>
 			</font>
-			<form action = "/viewstory" method = "POST">
-				<big><b> Previous Entry: </b></big>
-				<br>
-				{{ previous_edit }}
-				<br><br>
-				<big><b> Your Entry: </b></big>
-				<br>
-				<textarea cols = "50" name="new_entry">
-				</textarea>
-				<br>
-				<input type = "submit" name = "sub1" value = "Publish">
-				<br>
-			</form>
+			<h3> {{ title }} </h3>
+			<br>
+			<br>
+			{{ entire_story }}
+			<br>
 			{% endblock %}
 		</center>
 	</body>
