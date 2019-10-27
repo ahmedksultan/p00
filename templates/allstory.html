@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+{% extends 'template.html' %}
+{% block title %}
+Search Results
+{% endblock %}
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    {% block body %}
+  </head>
+  <body bgcolor = "#FAE1DC">
+    <center>
+      <font face = "courier new">
+          <h1> <font color = "#3BB9FF"> All Story </font> </h1>
+      </font>
+      {%for item in display%}
+      <ul>
+        <li>{{item}}</li>
+      </ul>
+      {% endfor %}
+        </center>
+          {% endblock %}
+    </body>
+</html>

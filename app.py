@@ -113,7 +113,16 @@ def story():
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     else:
-        return render_template('homepage.html', name=session['user'])
+        db = sqlite3.connect(DB_FILE)  # open database
+        c = db.cursor()
+        command="SELECT stories_edited FROM users WHERE \""+session.get('user')+"\" =username"
+        c.execute(command)
+        mystories = c.fetchall() #get the results of the selection
+        mystories=str(mystories[0])[2:-3]
+        collection=mystories.split(",")
+        db.commit()  # save changes
+        db.close()  # close database
+        return render_template('homepage.html', name=session['user'], storycoll=collection)
 
 
 @app.route("/search")  # search page
@@ -132,47 +141,61 @@ def take():
         return redirect(url_for("start"))
     keywords = request.form['keywords']  # retrieve search input
     tags = request.form['tags']
-    if keywords == "" and tags == "":
+    if keywords == "" and tags == "": #refresh page is no input but submitted
         return render_template('searchpage.html')
-    if len(tags) > 0:
+    if len(tags) > 0: #if tag is inputted, split tag to seperate tags
         tags = tags.strip().split(" ")
-    if len(keywords) > 0:
+    if len(keywords) > 0: #if key words typed in, split keywords into seperate tags
         keywords = keywords.strip().split(" ")
-        command = "SELECT story_title FROM edits WHERE "
+        command = "SELECT story_title FROM edits WHERE " #begin selecting story titles that match keywords
         count = 0
-        while count < len(keywords):
+        while count < len(keywords): #loop through to see if any titles contain the keywords inputted
             if count == len(keywords)-1:
                 command += "story_title LIKE \"%" + keywords[count] + "%\" "
             else:
                 command += "story_title LIKE \"%" + keywords[count] + "%\" OR "
             count += 1
-    if len(tags) > 0 and len(keywords) == 0:
-        command = "SELECT story_title FROM edits WHERE "
+    if len(tags) > 0 and len(keywords) == 0: #if only tags tinputed
+        command = "SELECT story_title FROM edits WHERE " #begin selecting story titles that match tags
         count = 0
-        while count < len(tags):
+        while count < len(tags): #loop through to see if any stories contain the tags inputted
             if count == len(tags) - 1:
                 command += "tags LIKE \"%" + tags[count] + "%\" "
             else:
                 command += "tags LIKE \"%" + tags[count] + "%\" OR "
             count += 1
-    if len(keywords) > 0 and len(tags) > 0:
+    if len(keywords) > 0 and len(tags) > 0: #if both search fields are inputted
         count = 0
-        while count < len(tags):
-            command += " OR tags LIKE \"%"+tags[count]+"%\" "
+        while count < len(tags): #loop through tags because keywords are already searched
+            command += " OR tags LIKE \"%"+tags[count]+"%\" " #loop through to find stories that containted those tags
             count += 1
     command += ";"
     print(command)
     c.execute(command)
-    search_results = c.fetchall()
+    search_results = c.fetchall() #get the results of the selection
     collection=[]
     for item in search_results:
-        collection.append(str(item))
+        collection.append(str(item)) #make tuple into strings
     db.commit()  # save changes
     db.close()  # close database
     return render_template('searchresults.html', key=request.form['keywords'],
                                                  tagged=request.form['tags'],
                                                  results=collection)
 
+@app.route("/allstories")
+def displayAll():
+    db = sqlite3.connect(DB_FILE)  # open database
+    c = db.cursor()
+    command="SELECT story_title from edits"
+    c.execute(command)
+    all=c.fetchall()
+    count = 0
+    collection=[]
+    for item in all:
+        collection.append(str(item)[2:-3])
+    db.commit()  # save changes
+    db.close()
+    return render_template('allstory.html', display=collection)
 
 @app.route("/logout")  # log out
 def logout():
