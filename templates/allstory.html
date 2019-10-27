@@ -12,7 +12,6 @@ Search Results
     <center>
       <font face = "courier new">
           <h1> <font color = "#85B27A"> All Stories </font> </h1>
-      </font>
       {%for item in display%}
       <ul>
         <li><a href="/editstory?value={{item}}">{{item}}</a></li>
@@ -20,5 +19,6 @@ Search Results
       {% endfor %}
         </center>
           {% endblock %}
+        </font>
     </body>
 </html>
