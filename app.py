@@ -345,7 +345,7 @@ def queue():
             return render_template("storyeditor.html", previous_edit = previous) #if can edit, go to edit page
 
 
-@app.route("/viewstory")  # read full story
+@app.route("/viewstory", methods=["GET", "POST"])  # read full story
 def view():  # only go to this page if there's a user
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)#remove from queue
     ip=request.environ["REMOTE_ADDR"]
@@ -377,7 +377,7 @@ def full():  # only go to this page if there's a user
     else:
         command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";"#display requested story
         c.execute(command)
-        title=request.args.get('value')
+        title = request.args.get('value')
         all_edits = c.fetchall()
         try:
             all_edits = str(all_edits[0])[2:-3]
@@ -425,6 +425,7 @@ def edit_tags():
         print(tag, str(tag)[2:-3])
         tag_coll.append(str(tag)[2:-3])
     print(tag_coll)
+    if not len(tag_coll):
     return render_template("tagedit.html", tag_list=tag_coll, story_title=story_name)
 
 
@@ -436,20 +437,32 @@ def add_tag():
     c.execute(command)
     db.commit()
     db.close()
-    return redirect(url_for('mystories'))
+    return redirect(url_for('story'))
 
 
 @app.route("/deletetag")
 def delete_tag():
+    story_name = request.args.get('story')
+    tag_name = request.args.get('tag')
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
     print(request.args.get('story'), request.args.get('tag'))
-    command = "DELETE FROM edits WHERE edits.tags=" + "\"" + request.args.get('tag') + \
-              "\"" + "AND story_title=" + "\"" + request.args.get('story') + "\";"
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
+    print(command)
+    c.execute(command)
+    tags = c.fetchall()
+    tag_coll = list()
+    for tag in tags:
+        print(tag, str(tag)[2:-3])
+        tag_coll.append(str(tag)[2:-3])
+    print(tag_coll, tag_name[2:-3])
+    tag_coll.remove(tag_name)
+    tag_coll_str = str(tag_coll)[1:-1].replace(',', ' ')
+    command = "UPDATE edits SET tags=" + "\"" + tag_coll_str + "\"" + "WHERE story_title=" + "\"" + story_name + "\";"
     c.execute(command)
     db.commit()
     db.close()
-    return redirect(url_for('mystories'))
+    return redirect(url_for('story'))
 
 
 @app.route("/delete")
