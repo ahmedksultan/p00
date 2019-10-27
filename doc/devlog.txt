@@ -183,3 +183,17 @@ caoT -- 2019-10-26 00:00
 
 alnasserA -- 2019-10-26 00:12
 	- Debugged our team's program issues over the virtual discord campfire and helped moved the project forward with GET a		and POST methods
+
+chenJ -- 2019-10-26 23:39
+	Updates of today's session, as of timestamp above (edits from everyone):
+	- made storyeditor.html and viewstory.html
+		- storyeditor.html: takes in previous_entry and displays it, then has textarea for new input
+		- viewstory.html: takes in title and entire_story from database and displays it
+	- made the routes /editstory and /viewstory, each corresponding to the htmls above
+	- worked on route and html for editing profile information
+	- improved the queue and waitlist system
+	- redesigned database so that the column that stores the entire story is separated by pipes
+		- each pipe ("|") separates an edit
+		- when the value is obtained, .split() is used to make a list of each edit
+		- when edits are over a certain number, the story terminates
+
