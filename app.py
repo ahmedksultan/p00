@@ -343,10 +343,6 @@ def queue():
             all_edits_list = all_edits.split("|") #show text without seperating pipes
             previous = all_edits_list[-1]
             return render_template("storyeditor.html", previous_edit = previous) #if can edit, go to edit page
-#def retrieve_latest():  # only go to this page if there's a user
-#    if session.get('user') is None:
-#        return redirect(url_for("start"))
-#    return "Under construction."
 
 
 @app.route("/viewstory")  # read full story
@@ -386,6 +382,7 @@ def full():  # only go to this page if there's a user
         try:
             all_edits = str(all_edits[0])[2:-3]
         except IndexError:
+            print(all_edits)
             return render_template("deleted.html")
         return render_template("viewstory.html", title = title, entire_story = all_edits)
 @app.route("/close")
@@ -409,7 +406,52 @@ def close():
     db.close()
     return render_template("closestory.html", title = request.args.get('value'), entire_story = view)#displays story by replacing all | with empty string
 
-#@app.route("/tagedit")
+
+@app.route("/tagedit")
+def edit_tags():
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # remove from queue
+    ip = request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    story_name = request.args.get('value')
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
+    print(command)
+    c.execute(command)
+    tags = c.fetchall()
+    tag_coll = list()
+    for tag in tags:
+        print(tag, str(tag)[2:-3])
+        tag_coll.append(str(tag)[2:-3])
+    print(tag_coll)
+    return render_template("tagedit.html", tag_list=tag_coll, story_title=story_name)
+
+
+@app.route("/addtag")
+def add_tag():
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    command = "INSERT INTO edits (tags) VALUES(" + "\"" + request.form['new_tags'] + "\";"
+    c.execute(command)
+    db.commit()
+    db.close()
+    return redirect(url_for('mystories'))
+
+
+@app.route("/deletetag")
+def delete_tag():
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    print(request.args.get('story'), request.args.get('tag'))
+    command = "DELETE FROM edits WHERE edits.tags=" + "\"" + request.args.get('tag') + \
+              "\"" + "AND story_title=" + "\"" + request.args.get('story') + "\";"
+    c.execute(command)
+    db.commit()
+    db.close()
+    return redirect(url_for('mystories'))
+
+
 @app.route("/delete")
 def delete():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue

@@ -1,5 +1,5 @@
-username	password	stories_edited	is_admin
-laffytaffy00	hejfdncfd	Willy Wonka, Major Mario	1
-azhengerrrr	yawnASMR	Ayham's Bedtime, Mandy's Stature Problems, Ayham's Spelling Problems	1
-vscojesse	hydroFLASKapp	""	0
-eeeeeeeeeeee	#!/usr/send_help	College Help, Asian Family Help, Mental Help, CS Help, Design send_help	0
+username,password,stories_edited,is_admin
+laffytaffy00,hejfdncfd,"Willy Wonka,Major Mario",1
+azhengerrrr,yawnASMR,"Ayham's Bedtime,Mandy's Stature Problems,Ayham's Spelling Problems",1
+vscojesse,hydroFLASKapp,Actually Saving the turtles,0
+eeeeeeeeeeee,#!/usr/send_help,"College Help,Asian Family Help,Mental Help,CS Help,Design send_help",0
