@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% extends 'template.html' %}
+{% block title %}
+Search Results
+{% endblock %}
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    {% block body %}
+  </head>
+  <body bgcolor = "#FAE1DC">
+    <font face = "courier new">
+      <center>
+        <h1> <font color = "#4863A0"> Edit Profile </font> </h1>
+        <form action = "/updateprofilecheck" method="POST">
+          <b> Choose the type of change you want to make. </b><br>
+          <input type="checkbox" name="change_user">Change username.<br>
+          <input type="checkbox" name="change_pwd">Change password.<br><br>
+          <font color =  "#C11B17">
+            {% set messages = get_flashed_messages() %}
+              {% for message in messages %}
+              {{ message }}
+              {% endfor %}
+          </font>
+          <br><br>
+          <b> Old Username </b> <br>
+          <input type="text" name="old_username">
+          <br>
+          <b> New Username </b> <br>
+          <input type="text" name="new_username">
+          <br><br><br>
+          <b> Old Password </b> <br>
+          <input type="password" name="old_password">
+          <br>
+          <b> New Password </b> <br>
+          <input type="password" name="new_password">
+          <br>
+          <b> Confirm New Password </b> <br>
+          <input type = "password" name = "passwordagain">
+          <br><br>
+          <input type="submit" name="sub1" value = "Update Profile">
+        </form>
+            {% endblock %}
+      </center>
+    </font>
+  </body>
+</html>
