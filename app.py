@@ -216,6 +216,7 @@ def take():
         return redirect(url_for("start"))
     keywords = request.form['keywords']  # retrieve search input
     tags = request.form['tags']
+
     if keywords == "" and tags == "": #refresh page is no input but submitted
         return render_template('searchpage.html')
     if len(tags) > 0: #if tag is inputted, split tag to seperate tags
@@ -226,7 +227,7 @@ def take():
         count = 0
         while count < len(keywords): #loop through to see if any titles contain the keywords inputted
             if count == len(keywords)-1:
-                command += "story_title LIKE \"%" + keywords[count] + "%\" "
+                command += "story_title LIKE \"%" + keywords[count] + "%\""
             else:
                 command += "story_title LIKE \"%" + keywords[count] + "%\" OR "
             count += 1
@@ -245,17 +246,19 @@ def take():
             command += " OR tags LIKE \"%"+tags[count]+"%\" " #loop through to find stories that containted those tags
             count += 1
     command += ";"
+    print(command)
     c.execute(command)
     search_results = c.fetchall() #get the results of the selection
     collection=[]
     for item in search_results:
         if str(item) not in collection:
-            collection.append(str(item)) #make tuple into strings
+            collection.append(str(item)[2:-3]) #make tuple into strings
     db.commit()  # save changes
     db.close()  # close database
     return render_template('searchresults.html', key=request.form['keywords'],
                                                  tagged=request.form['tags'],
                                                  results=collection)
+
 
 @app.route("/allstories")
 def displayAll():
@@ -334,7 +337,7 @@ def queue():
         command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";"
         c.execute(command)
         all_edits = c.fetchall()
-        all_edits = str(all_edits[0])[2:-3]
+        all_edits = str(all_edits)
         if all_edits.count("|") >= 200:
             return render_template("viewstory.html", title = request.args.get('value'), entire_story = all_edits)
         else:
@@ -391,19 +394,12 @@ def close():
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command="SELECT story_title FROM edits;"
+    command="SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";"
     c.execute(command)
-    stories = c.fetchall()
-    for story in stories:
-        story=str(story)[2:-3]
-        if story in request.args.get('value'):
-            command="SELECT story FROM edits WHERE story_title = "+"\""+story+"\";"
-            c.execute(command)
-            view=str(c.fetchall()[0])[2:-3]
-            command="UPDATE edits SET story= \""+view+"||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\""+ " WHERE story_title ="+"\""+story+"\";"
-            c.execute(command)
-            command="SELECT story FROM edits WHERE story_title = "+"\""+story+"\";"
-            break
+    view=str(c.fetchall()[0])[2:-3]
+    command="UPDATE edits SET story= \""+view+"||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\""+ " WHERE story_title ="+"\""+request.args.get('value')+"\";"
+    c.execute(command)
+    command="SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";"
     c.execute(command)
     view=str(c.fetchall()[0])[2:-3]
     db.commit()
@@ -411,7 +407,20 @@ def close():
     return render_template("closestory.html", title = request.args.get('value'), entire_story = view)
 
 #@app.route("/tagedit")
-#@app.route("/delete")
+@app.route("/delete")
+def delete():
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    ip=request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    command="DELETE FROM edits WHERE story_title = \""+request.args.get('value')+"\";"
+    c.execute(command)
+    db.commit()
+    db.close()
+    return render_template("deletestory.html", title = request.args.get('value'))
+
 
 @app.route("/updateprofile")
 def update():
