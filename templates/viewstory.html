@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% extends 'template.html' %}
+{% block title %}
+View a story!
+{% endblock %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		{% block body %}
+		<title> Story Viewing </title>
+	</head>
+	<body bgcolor = "#FAE1DC">
+		<center>
+			<font face = "courier new">
+				<h1> View a story! </h1>
+			</font>
+			<h3> {{ title }} </h3>
+			<br>
+			<br>
+			{{ entire_story }}
+			<br>
+			{% endblock %}
+		</center>
+	</body>
+</html>
