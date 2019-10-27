@@ -230,6 +230,7 @@ def displayAll():
     for item in all:
         if str(item) not in collection:
             collection.append(str(item)[2:-3])
+    sorted(collection)
     db.commit()  # save changes
     db.close()
     return render_template('allstory.html', display=collection)
