@@ -9,16 +9,18 @@ Search Results
     {% block body %}
   </head>
   <body bgcolor = "#FAE1DC">
-    <center>
-      <font face = "courier new">
-          <h1> <font color = "#3BB9FF"> All Story </font> </h1>
-      </font>
-      {%for item in display%}
-      <ul>
-        <li>{{item}}</li>
-      </ul>
-      {% endfor %}
-        </center>
-          {% endblock %}
-    </body>
+    <font face = "courier new">
+      <center>
+        <h1> <font color = "#54C571"> All Stories </font> </h1>
+      </center>
+        {%for item in display%}
+        <ul>
+          <li>{{item}}</li>
+        </ul>
+        {% endfor %}
+        <center>
+            {% endblock %}
+    </font>
+  </center>
+  </body>
 </html>
