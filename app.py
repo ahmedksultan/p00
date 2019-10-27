@@ -120,7 +120,6 @@ def story():
         mystories = c.fetchall() #get the results of the selection
         mystories=str(mystories[0])[2:-3]
         collection=mystories.split(",")
-        print(collection)
         db.commit()  # save changes
         db.close()  # close database
         return render_template('homepage.html', name=session['user'], storycoll=collection)
@@ -183,6 +182,20 @@ def take():
                                                  tagged=request.form['tags'],
                                                  results=collection)
 
+@app.route("/allstories")
+def displayAll():
+    db = sqlite3.connect(DB_FILE)  # open database
+    c = db.cursor()
+    command="SELECT story_title from edits"
+    c.execute(command)
+    all=c.fetchall()
+    count = 0
+    collection=[]
+    for item in all:
+        collection.append(str(item)[2:-3])
+    db.commit()  # save changes
+    db.close()
+    return render_template('allstory.html', display=collection)
 
 @app.route("/logout")  # log out
 def logout():
