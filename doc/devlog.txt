@@ -196,6 +196,7 @@ chenJ -- 2019-10-26 23:39
 		- each pipe ("|") separates an edit
 		- when the value is obtained, .split() is used to make a list of each edit
 		- when edits are over a certain number, the story terminates
+		
 zhengA -- 2019-10-26 23:59
 	-linking of each story on mystories, allstories, and search results
 	-check if closed or not and link to seperate based on results
@@ -203,22 +204,31 @@ zhengA -- 2019-10-26 23:59
 	-removing ip address from queue if not on editing route
 	-formatting the printing of text
 	-estimated queue time production
+	
 alnasserA -- 2019-10-27 23:08
 	-modified csv
 	-edit tags, update tags, remove tags
 	-admin power
+	
 tcao -- 2019-10-27 23:10
 	-styling
 	-made tags viewable in allstories, mystories, searchresults
 	-count characters in editing
+	
 chenJ -- 2019-10-27 22:30
 	-finished editstory submission
 	-finished story editor and corresponding route
 	-finished view story and corresponding route
 	-doing story creator, add story, and the corresponding route
+	
 zhengA -- 2019-10-27 23:11
 	-finished close power and corresponding html
 	-finished delete power and corresopnding html
 	-worked on taggedit and add tag and remove tag
 	-get text to display tags as html
+
+alnasserA -- 2019-10-28 01:53
+	- PEP8 appropriate changes to py file
+	- refractored a few of the equality checks with None etc.
+	- modified devlog.txt
 
