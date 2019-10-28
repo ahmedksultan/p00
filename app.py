@@ -117,7 +117,7 @@ def is_admin():
 
 @app.route("/")  # landing page
 def start():
-    print(app)
+    #print(app)
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
@@ -193,11 +193,14 @@ def story():
     else:
         db = sqlite3.connect(DB_FILE)  # open database
         c = db.cursor()
-        command="SELECT stories_edited FROM users WHERE \""+session.get('user')+"\" =username"
+        command="SELECT stories_edited FROM users WHERE \""+session.get('user')+"\" =username;"
         c.execute(command)
         mystories = c.fetchall()  # get the results of the selection
-        mystories=str(mystories[0])[2:-3]
-        collection=mystories.split(",")
+        if str(mystories[0])[2:-3]=="on":
+            collection=[]
+        else:
+            mystories=str(mystories[0])[2:-3]
+            collection=mystories.split(",")
         db.commit()  # save changes
         db.close()  # close database
         if is_admin():
@@ -338,7 +341,24 @@ def see_entry():
         flash("Fill in all the blanks to create a story.")
         return render_template('storycreator.html')
     else:
-        return "done"
+        db = sqlite3.connect(DB_FILE)
+        c = db.cursor()
+        created_title = request.form['story_title']
+        created_tags = request.form['tags']
+        created_entry = request.form['entry_1']
+        command = "INSERT INTO edits VALUES(\"" + created_title + "\",\"" + str(datetime.utcnow()) + "\",\"" + session['user'] + "\",\"" + created_tags + "\",\"" + created_entry + "\");"
+        c.execute(command)
+        #update users
+        command = "SELECT stories_edited FROM users WHERE username = \"" + session['user'] + "\";"
+        c.execute(command)
+        current_stories_edited = c.fetchall()
+        current_stories_edited = str(current_stories_edited)[3:-4]
+        updated_stores_edited = current_stories_edited + "," + created_title
+        command = "UPDATE users SET stories_edited=\"" + updated_stores_edited + "\" WHERE username = \"" + session['user'] + "\";"
+        c.execute(command)
+        db.commit()
+        db.close()
+        return render_template("viewstory.html", title = created_title, entire_story = created_entry)
 
 
 @app.route("/editstory")  # editing page
@@ -393,36 +413,36 @@ def view():  # only go to this page if there's a user
             #title = request.form['title_again']
             title = request.args.get('value')
             command = "SELECT story FROM edits WHERE story_title =\"" + title + "\";"
-            print(command)
+            #print(command)
             c.execute(command)
             current_edits = c.fetchall()
             current_edits = str(current_edits)[3:-4] #format
             updated_edits = current_edits + " | " + new_entry #updated = current + new
             command = "UPDATE edits SET story=\"" + updated_edits + "\" WHERE story_title = \"" + title + "\";"
-            print(command)
+            #print(command)
             c.execute(command)
 
             #Updates 'last_editor' entry in table 'edits' for story 'story_title'
             last_editor = session['user']
             command = "UPDATE edits SET last_editor=\"" + last_editor + "\"" + "WHERE story_title = \"" + title + "\";"
-            print(command)
+            #print(command)
             c.execute(command)
 
             #Updates 'timestamp' entry in the table 'edits' for story 'story_title'
             current_time = str(datetime.utcnow())
             command = "UPDATE edits SET time_stamp=\"" + current_time + "\" WHERE story_title =\"" + title + "\";"
-            print(command)
+            #print(command)
             c.execute(command)
 
             #Updates 'stories_edited' entry in the table 'users' for user 'user'
             command = "SELECT stories_edited FROM users WHERE username = \"" + session['user'] + "\";"
-            print(command)
+            #print(command)
             c.execute(command)
             current_stories_edited = c.fetchall()
             current_stories_edited = str(current_stories_edited)[3:-4]
             updated_stories_edited = current_stories_edited + "," + title
             command = "UPDATE users SET stories_edited=\"" + updated_stories_edited + "\" WHERE username = \"" + session['user'] + "\";"
-            print(command)
+            #print(command)
             c.execute(command)
 
             #stuff
@@ -526,14 +546,18 @@ def add_tag():
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
     command = "SELECT tags FROM edits WHERE story_title = " + "\"" + request.args.get('story') + ";"  # find the whole story
-    print(command)
+    #print(command)
     c.execute(command)
     tag = str(c.fetchall()[0])[2:-3]  # format into string
-    command = "UPDATE edits SET tags= \"" + str(tag) + " " + str(request.form['new_tags']) + "\"" + " WHERE story_title =" + "\"" + request.args.get('story')  + ";"
-    print(command)
-    c.execute(command)
-    db.commit()
-    db.close()
+    newtag=str(request.form.get('new_tags'))
+    if newtag[0]!="#":
+        newtag="#"+newtag
+    if newtag not in tag:
+        command="UPDATE edits SET tags= \"" + str(tag) + " " + newtag + "\"" + " WHERE story_title ="+"\""+request.args.get('story')+";"
+        #print(command)
+        c.execute(command)
+        db.commit()
+        db.close()
     return redirect(url_for('story'))
 
 
@@ -603,14 +627,14 @@ def update_check():
         if (username == old_username):  # check if old and new username is the same
             flash("Your old and new username are the same. Nothing will be changed.")
             return render_template('editprofile.html')
-        print(check_sign(old_username))
+        #print(check_sign(old_username))
         if check_sign(old_username) != "done":  # if the old username is correct...
             check = check_sign(username)  # check if new username is valid
             if check != "done":   # if it isn't valid, flash error message
                 flash("" + check)
                 return render_template('editprofile.html')
             else:  #otherwise, change username
-                print(edit_name(old_username, username))
+                #print(edit_name(old_username, username))
                 session['user'] = username  # change session name
                 if not(request.form.get('change_pwd')):
                     flash("Your username has been updated.")
