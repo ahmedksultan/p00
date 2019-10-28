@@ -13,13 +13,13 @@ View a story!
 		<center>
 			<font face = "courier new">
 				<h1> Story Closed </h1>
-			</font>
 			<h3> {{ title }} </h3>
 			<br>
 			<br>
 			{{ entire_story | safe | replace("|","")}}
 			<br>
 			{% endblock %}
+			</font>
 		</center>
 	</body>
 </html>

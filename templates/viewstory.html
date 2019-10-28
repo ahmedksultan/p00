@@ -12,14 +12,20 @@ View a story!
 	<body bgcolor = "#FAE1DC">
 		<center>
 			<font face = "courier new">
-				<h1> View a story! </h1>
-			</font>
-			<h3> {{ title }} </h3>
+				<font color = "#A52A2A">
+					<h1> View A Story! </h1>
+				</font>
+			<h2> {{ title }} </h2>
 			<br>
 			<br>
 			{{ entire_story | safe | replace("|","")}}
-			<br>
+			<br><br>
+			<br><br>
+			<br><br>
+			<br><br>
+			<br><br>
 			{% endblock %}
+		</font>
 		</center>
 	</body>
 </html>
