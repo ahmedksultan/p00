@@ -371,7 +371,8 @@ def view():  # only go to this page if there's a user
             return redirect(url_for("queue")) #no entry, goes back to editing story
         else:
             #Updates 'story' entry in the table 'edits' for story 'story_title'
-            title = request.form['title_again']
+            #title = request.form['title_again']
+            title = request.args.get('value')
             command = "SELECT story FROM edits WHERE story_title =\"" + title + "\";"
             print(command)
             c.execute(command)
