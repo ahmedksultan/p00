@@ -74,11 +74,12 @@ def check_pwd(user, pwd):  # function for checking if a password is correct
     else:
         return "Old password is incorrect."  # if username is not in database
 
+
 def edit_name(old_user, new_user):  # function for editing the username
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     command = "UPDATE users SET username = \"" + new_user + "\" WHERE username = \"" + old_user + "\";"  # update username
@@ -104,11 +105,13 @@ def edit_pwd(old_pwd, new_pwd):  # function for changing password
 
 # =================== Part 2: Routes ===================
 
-#def is_admin():
- #   db = sqlite3.connect(DB_FILE)  # open database
-  #  c = db.cursor()
-   # command = "SELECT is_admin FROM users WHERE username=" + "\"" + session['user'] + "\";"
-    #if session['user']
+def is_admin():
+    db = sqlite3.connect(DB_FILE)  # open database
+    c = db.cursor()
+    command = "SELECT is_admin FROM users WHERE username=" + "\"" + session['user'] + "\";"
+    c.execute(command)
+    ouptut = int(str(c.fetchall())[2:-3])
+    return bool(ouptut)
 
 
 @app.route("/")  # landing page
@@ -191,12 +194,14 @@ def story():
         c = db.cursor()
         command="SELECT stories_edited FROM users WHERE \""+session.get('user')+"\" =username"
         c.execute(command)
-        mystories = c.fetchall() #get the results of the selection
+        mystories = c.fetchall()  # get the results of the selection
         mystories=str(mystories[0])[2:-3]
         collection=mystories.split(",")
         db.commit()  # save changes
         db.close()  # close database
-        return render_template('homepage.html', name=session['user'], storycoll=collection)
+        if is_admin():
+            return render_template('homepage.html', name=session['user'], storycoll=collection)
+        return render_template('homepagePEASANT.html', name=session['user'], storycoll=collection)
 
 
 @app.route("/search")  # search page
@@ -224,7 +229,7 @@ def take():
     keywords = request.form['keywords']  # retrieve search input
     tags = request.form['tags']
 
-    if keywords == "" and tags == "": #refresh page is no input but submitted
+    if keywords == "" and tags == "":  # refresh page is no input but submitted
         return render_template('searchpage.html')
     if len(tags) > 0: #if tag is inputted, split tag to seperate tags
         tags = tags.strip().split(" ")
@@ -261,9 +266,13 @@ def take():
             collection.append(str(item)[2:-3]) #make tuple into strings
     db.commit()  # save changes
     db.close()  # close database
-    return render_template('searchresults.html', key=request.form['keywords'],
-                                                 tagged=request.form['tags'],
-                                                 results=collection)
+    if is_admin():
+        return render_template('searchresults.html', key=request.form['keywords'],
+                                                     tagged=request.form['tags'],
+                                                    results=collection)
+    return render_template('searchresultsPEASANT.html', key=request.form['keywords'],
+                                                     tagged=request.form['tags'],
+                                                    results=collection)
 
 
 @app.route("/allstories")
@@ -278,13 +287,16 @@ def displayAll():
     c.execute(command)
     all=c.fetchall()
     collection=[]
-    for item in all: #turn every item into a string and put it into a list to display
+    for item in all: # turn every item into a string and put it into a list to display
         if str(item) not in collection:
             collection.append(str(item)[2:-3])
     sorted(collection)
     db.commit()  # save changes
     db.close()
-    return render_template('allstory.html', display=collection)
+    if is_admin():
+        return render_template('allstory.html', display=collection)
+    return render_template('allstoryPEASANT.html', display=collection)
+
 
 @app.route("/logout")  # log out
 def logout():
@@ -348,7 +360,7 @@ def queue():
         else:
             all_edits_list = all_edits.split("|") #show text without seperating pipes
             previous = all_edits_list[-1]
-            return render_template("storyeditor.html", previous_edit = previous) #if can edit, go to edit page
+            return render_template("storyeditor.html", title = request.args.get('value'), previous_edit = previous) #if can edit, go to edit page
 
 
 @app.route("/viewstory", methods=["GET", "POST"])  # read full story
@@ -370,6 +382,8 @@ def view():  # only go to this page if there's a user
             #Updates Database
             #commands and stuff
             return render_template("viewstory.html", title = title, entire_story = entire_story)
+
+
 @app.route("/fullstory")
 def full():  # only go to this page if there's a user
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
@@ -389,7 +403,18 @@ def full():  # only go to this page if there's a user
             all_edits = str(all_edits[0])[2:-3]
         except IndexError:
             return render_template("deleted.html")
-        return render_template("viewstory.html", title = title, entire_story = all_edits)
+        command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
+        print(command)
+        c.execute(command)
+        tags = str(c.fetchall())[3:-4]
+        tag_coll = list()
+        for tag in tags.split(' '):
+            print(tag, str(tag))
+            tag_coll.append(str(tag))
+        tag_coll = [x for x in tag_coll if x != ""]
+        return render_template("viewstory.html", title = title, entire_story = all_edits, tag_list=tag_coll)
+
+
 @app.route("/close")
 def close():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
@@ -407,9 +432,18 @@ def close():
     command="SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";" #get new story now
     c.execute(command)
     view=str(c.fetchall()[0])[2:-3]
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
+    print(command)
+    c.execute(command)
+    tags = str(c.fetchall())[3:-4]
+    tag_coll = list()
+    for tag in tags.split(' '):
+        print(tag, str(tag))
+        tag_coll.append(str(tag))
+    tag_coll = [x for x in tag_coll if x != ""]
     db.commit()
     db.close()
-    return render_template("closestory.html", title = request.args.get('value'), entire_story = view)#displays story by replacing all | with empty string
+    return render_template("closestory.html", title = request.args.get('value'), entire_story = view, tag_list=tag_coll)#displays story by replacing all | with empty string
 
 
 @app.route("/tagedit")
@@ -509,14 +543,15 @@ def update_check():
     username = request.form['new_username']
     password = request.form['new_password']
     password_again = request.form['passwordagain']
-    print(session['user'])   # if user wants to change username
+    # if user wants to change username
     if (request.form.get('change_user')):
         if (username != None and old_username == "") or (username == "" and old_username != None):  #check if both fields are inputted
-            flash("Please fill in both your old and new username to update your profile.")
+            flash("Please fill in both your old and new information to update your profile.")
             return render_template('editprofile.html')
-        if (username == old_username):
+        if (username == old_username):  # check if old and new username is the same
             flash("Your old and new username are the same. Nothing will be changed.")
             return render_template('editprofile.html')
+        print(check_sign(old_username))
         if check_sign(old_username) != "done":  # if the old username is correct...
             check = check_sign(username)  # check if new username is valid
             if check != "done":   # if it isn't valid, flash error message
@@ -535,10 +570,10 @@ def update_check():
         if (password != None and old_password == "") or (password == "" and old_password != None):  #check if both fields are inputted
             flash("Please fill in both your old and new information to update your profile.")
             return render_template('editprofile.html')
-        if (password == old_password):
+        if (password == old_password):  # check if old and new password is the same
             flash("Your old and new password are the same. Nothing will be changed.")
             return render_template('editprofile.html')
-        if password != password_again:
+        if password != password_again:  # check if both passwords match
             flash("Password does not match.")
             return render_template('editprofile.html')
         check = check_pwd(session['user'], password)  # check if old password is correct

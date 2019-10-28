@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 {% extends 'template.html' %}
 {% block title %}
-View a story!
+Closing Story
 {% endblock %}
 <html>
 	<head>
 		<meta charset="utf-8">
 		{% block body %}
-		<title> Closing Story </title>
 	</head>
 	<body bgcolor = "#FAE1DC">
 		<center>
 			<font face = "courier new">
+				<font color = "#C25A7C">
 				<h1> Story Closed </h1>
-			</font>
-			<h3> {{ title }} </h3>
+				</font>
+			<h2> {{ title }} </h2>
+			<br><b>
+			{% for tag in tag_list%}
+				{{tag}}
+			{% endfor %}</b>
+			<br>
 			<br>
 			<br>
 			{{ entire_story | safe | replace("|","")}}
-			<br>
+			<br><br>
+			<br><br>
+			<br><br>
 			{% endblock %}
+			</font>
 		</center>
 	</body>
 </html>
