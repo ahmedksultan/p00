@@ -9,7 +9,8 @@
       -Searching a story
             -You can search by using tags
             -You can search by using title
-      -Clicking on a story that you haven't edited allows you to edit (unless someone else is editing in which case you will be in queue)
+      -Clicking on a story that you haven't edited allows you to edit 
+            -if someone else is editing you will be in queue
             -Editing only allows 600 characters and then it cuts off your text
             -Allows for html tags to make hypermark text
             -After editing, you can view full story
@@ -22,7 +23,8 @@
       -Admin Power:
             -Can add and delete tags
             -Can close story so no one can edited anymore
-            -Can delete story if content is inappropriate (users can still see this story as part of stories they edited but clicking on it will show it has been deleted)
+            -Can delete story if content is inappropriate 
+                  -story is still in mystories but clicking on it will show it has been deleted
      
 ## Possible Future Add-Ons:
       -Tell User how many edits left before closing
