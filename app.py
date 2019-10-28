@@ -111,15 +111,16 @@ def edit_pwd(old_pwd, new_pwd):  # function for changing password
     return "done"  # if username is not in database
 
 
-# =================== Part 2: Routes ===================
-
-def is_admin():
+def is_admin():  # check if user is an admin
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     command = "SELECT is_admin FROM users WHERE username=" + "\"" + session['user'] + "\";"
     c.execute(command)
     ouptut = int(str(c.fetchall())[2:-3])
     return bool(ouptut)
+
+
+# =================== Part 2: Routes ===================
 
 
 @app.route("/")  # landing page
@@ -195,7 +196,7 @@ def story():
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
-    if session.get('user') is None:  # only go to this page if there's a user
+    if session.get('user') is None:  # only give access to this page if there's a user
         return redirect(url_for("start"))
     else:
         db = sqlite3.connect(DB_FILE)  # open database
@@ -208,6 +209,7 @@ def story():
         else:
             mystories = str(mystories[0])[2:-3]
             collection = mystories.split(",")
+            sorted(collection)
         db.commit()  # save changes
         db.close()  # close database
         if is_admin():
@@ -221,7 +223,7 @@ def find():
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
-    if session.get('user') is None:  # only go to this page if there's a user
+    if session.get('user') is None:  # only give access to this page if there's a user
         return redirect(url_for("start"))
     else:
         return render_template('searchpage.html')
@@ -235,7 +237,7 @@ def take():
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    if session.get('user') is None:  # only go to this page if there's a user
+    if session.get('user') is None:  # only give access this page if there's a user
         return redirect(url_for("start"))
     keywords = request.form['keywords']  # retrieve search input
     tags = request.form['tags']
@@ -277,7 +279,7 @@ def take():
             collection.append(str(item)[2:-3])  # make tuple into strings
     db.commit()  # save changes
     db.close()  # close database
-    if is_admin():
+    if is_admin():  # check admin status for different homepages
         return render_template('searchresults.html', key=request.form['keywords'],
                                                      tagged=request.form['tags'],
                                                      results=collection)
@@ -286,12 +288,14 @@ def take():
                                                      results=collection)
 
 
-@app.route("/allstories")
+@app.route("/allstories")  # display all stories
 def display_all():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
+    if session.get('user') is None:  # only give access to this page if there's a user
+        return redirect(url_for("start"))
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     command = "SELECT story_title from edits"  # get all stories
@@ -301,7 +305,7 @@ def display_all():
     for item in all:  # turn every item into a string and put it into a list to display
         if str(item) not in collection:
             collection.append(str(item)[2:-3])
-    sorted(collection)
+    sorted(collection)  # make in alphabetical order
     db.commit()  # save changes
     db.close()
     if is_admin():
@@ -328,9 +332,9 @@ def plus_story():
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
-    if session.get('user') is None:  # only go to this page if there's a user
+    if session.get('user') is None:  # only give access to this page if there's a user
         return redirect(url_for("start"))
-    return render_template('storycreator.html')
+    return render_template('storycreator.html')  # new story page
 
 
 @app.route("/story", methods=["GET", "POST"])  # submission page of new story input
@@ -339,7 +343,7 @@ def see_entry():
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
-    if session.get('user') is None:  # only go to this page if there's a user
+    if session.get('user') is None:  # only give access to this page if there's a user
         return redirect(url_for("start"))
     title = request.form['story_title']  # retrieve story input
     tags = request.form['tags']
@@ -353,6 +357,7 @@ def see_entry():
         created_title = request.form['story_title']
         created_tags = request.form['tags']
         created_entry = request.form['entry_1']
+        # insert story input intod database
         command = "INSERT INTO edits VALUES(\"" + created_title + "\",\"" + str(datetime.utcnow()) + \
                   "\",\"" + session['user'] + "\",\"" + created_tags + "\",\"" + created_entry + "\");"
         c.execute(command)
@@ -361,7 +366,7 @@ def see_entry():
         c.execute(command)
         current_stories_edited = c.fetchall()
         current_stories_edited = str(current_stories_edited)[3:-4]
-        updated_stores_edited = current_stories_edited + "," + created_title
+        updated_stores_edited = current_stories_edited + "," + created_title  # add the new story onto the list
         command = "UPDATE users SET stories_edited=\"" + updated_stores_edited + \
                   "\" WHERE username = \"" + session['user'] + "\";"
         c.execute(command)
@@ -372,6 +377,8 @@ def see_entry():
 
 @app.route("/editstory")  # editing page
 def queue():
+    if session.get('user') is None:  # only give access to this page if there's a user
+        return redirect(url_for("start"))
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # finds ip
     ip = request.environ["REMOTE_ADDR"]
     if len(waitlist) == 0 and ip not in waitlist:
@@ -390,27 +397,28 @@ def queue():
         title_save = request.args.get('value')
         command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
         c.execute(command)
+        # retrieve all the tags for the story
         tags = str(c.fetchall())[3:-4]
         tag_coll = list()
         for tag in tags.split(' '):
             tag_coll.append(str(tag).strip("'"))
         tag_coll = [x for x in tag_coll if x != ""]
         if all_edits.count("|") >= 200:  # if no more edits allowed
-            return render_template("viewstory.html", title=title_save, entire_story=all_edits, tag_list=tag_coll)  # go
-            # straight to viewing full story
+            return render_template("viewstory.html", title=title_save, entire_story=all_edits, tag_list=tag_coll)
+            # go straight to viewing full story
         else:
             all_edits_list = all_edits.split("|")  # show text without separating pipes
             previous = all_edits_list[-1]
             return render_template("storyeditor.html", previous_edit=previous, title=title_save, tag_list=tag_coll)
 
 
-@app.route("/viewstory", methods=["GET", "POST"])  # read full story
-def view():  # only go to this page if there's a user
+@app.route("/viewstory", methods=["GET", "POST"])  # read full story after using story editor
+def view():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # remove from queue
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
-    if session.get('user') is None:
+    if session.get('user') is None:  # only give access to this page if there's a user
         return redirect(url_for("start"))
     else:
         db = sqlite3.connect(DB_FILE)
@@ -460,6 +468,7 @@ def view():  # only go to this page if there's a user
             all_edits = c.fetchall()
             entire_story = str(all_edits)[3:-4]
 
+            # retrieves all tags of the story
             command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
             c.execute(command)
             tags = str(c.fetchall())[3:-4]
@@ -473,15 +482,15 @@ def view():  # only go to this page if there's a user
             return render_template("viewstory.html", title=title, entire_story=entire_story, tag_list=tag_coll)
 
 
-@app.route("/fullstory")
-def full():  # only go to this page if there's a user
+@app.route("/fullstory")  # view full story after clinking on story link
+def full():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # remove from queue
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    if session.get('user') is None:
+    if session.get('user') is None:  # only give access to this page if there's a user
         return redirect(url_for("start"))
     else:
         command = "SELECT story FROM edits WHERE " \
@@ -493,6 +502,7 @@ def full():  # only go to this page if there's a user
             all_edits = str(all_edits[0])[2:-3]
         except IndexError:
             return render_template("deleted.html")
+        # retrieves all tags of the story
         command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
         c.execute(command)
         tags = str(c.fetchall())[3:-4]
@@ -503,12 +513,14 @@ def full():  # only go to this page if there's a user
         return render_template("viewstory.html", title=title, entire_story=all_edits, tag_list=tag_coll)
 
 
-@app.route("/close")
+@app.route("/close")  # admin power to close a story (no more edits)
 def close():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # remove from queue
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
+    if session.get('user') is None:  # only give access to this page if there's a user
+        return redirect(url_for("start"))
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
     command = "SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";"  # find the story
@@ -524,6 +536,7 @@ def close():
     command = "SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";"  # get new story now
     c.execute(command)
     view = str(c.fetchall()[0])[2:-3]
+    # retrieve all tags for the story
     command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
     c.execute(command)
     tags = str(c.fetchall())[3:-4]
@@ -537,16 +550,18 @@ def close():
     # displays story by replacing all | with empty string
 
 
-@app.route("/tagedit")
+@app.route("/tagedit")  # admin power to edit a story's tags
 def edit_tags():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # remove from queue
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
+    if session.get('user') is None:  # only give access to this page if there's a user
+        return redirect(url_for("start"))
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    story_name = request.args.get('value')
-    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
+    story_name = request.args.get('value')  # get story title
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"  # retrieve all tags for the story
     c.execute(command)
     tags = str(c.fetchall())[3:-4]
     tag_coll = list()
@@ -556,21 +571,27 @@ def edit_tags():
     return render_template("tagedit.html", tag_list=tag_coll, story_title=story_name)
 
 
-@app.route("/addtag", methods=['GET', 'POST'])
+@app.route("/addtag", methods=['GET', 'POST'])  # admin power to add tags to a story
 def add_tag():
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # remove from queue
+    ip = request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    if session.get('user') is None:  # only give access to this page if there's a user
+        return redirect(url_for("start"))
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command = "SELECT tags FROM edits WHERE story_title = " + "\"" + request.args.get('story') + ";"
+    command = "SELECT tags FROM edits WHERE story_title = " + "\"" + request.args.get('story') + ";"  # retrieve all tags for the story
     # find the whole story
     # print(command)
     c.execute(command)
     tag = str(c.fetchall()[0])[2:-3]  # format into string
-    newtag = str(request.form.get('new_tags'))
+    newtag = str(request.form.get('new_tags'))  # retrieve input for new tags
     if newtag[0] != "#":
         newtag = "#" + newtag
     if newtag not in tag:
         command = "UPDATE edits SET tags= \"" + str(tag) + " " + newtag + "\"" + \
-                "WHERE story_title ="+"\""+request.args.get('story')+";"
+                "WHERE story_title ="+"\""+request.args.get('story')+";"  # add new tags to list of tags
         # print(command)
         c.execute(command)
         db.commit()
@@ -578,12 +599,19 @@ def add_tag():
     return redirect(url_for('story'))
 
 
-@app.route("/deletetag")
+@app.route("/deletetag")  # admin power to delete tags of a story
 def delete_tag():
-    story_name = request.args.get('story')
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # remove from queue
+    ip = request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    if session.get('user') is None:  # only give access to this page if there's a user
+        return redirect(url_for("start"))
+    story_name = request.args.get('story')  # retrieve story information
     tag_name = request.args.get('tag')
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
+    # retrieve all tags for a story
     command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
     c.execute(command)
     tags = str(c.fetchall())[3:-4]
@@ -592,6 +620,7 @@ def delete_tag():
         tag_coll.append(str(tag).strip())
     tag_coll = [x for x in tag_coll if ("'" not in x) or (tag_name not in x)]
     tag_coll_str = str(tag_coll)[1:-1].replace(',', ' ').replace('"', "").replace("'", "")
+    # update tags list after deletion
     command = "UPDATE edits SET tags=" + "\"" + tag_coll_str + "\"" + " WHERE story_title=" + "\"" + story_name + "\";"
     c.execute(command)
     db.commit()
@@ -599,12 +628,14 @@ def delete_tag():
     return redirect(url_for('story'))
 
 
-@app.route("/delete")
+@app.route("/delete")  # admin power to delete a story
 def delete():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # remove from queue
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
+    if session.get('user') is None:  # only give access to this page if there's a user
+        return redirect(url_for("start"))
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
     command = "DELETE FROM edits WHERE story_title = \""+request.args.get('value')+"\";"  # delete entire row from edits
@@ -614,24 +645,26 @@ def delete():
     return render_template("deletestory.html", title=request.args.get('value'))
 
 
-@app.route("/updateprofile")
+@app.route("/updateprofile")  # users allowed to change user or password
 def update():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
-    if session.get('user') is None:  # only go to this page if there's a user
+    if session.get('user') is None:  # only give access to this page if there's a user
         return redirect(url_for("start"))
-    else:
+    else:  # otherwise go to profile change page
         return render_template('editprofile.html')
 
 
-@app.route("/updateprofilecheck", methods=["GET", "POST"])
+@app.route("/updateprofilecheck", methods=["GET", "POST"])  # retrieving input and checking user's desired changes to profil
 def update_check():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip = request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove()
+    if session.get('user') is None:  # only give access to this page if there's a user
+        return redirect(url_for("start"))
     old_username = request.form['old_username']  # retrieve html form information
     old_password = request.form['old_password']
     username = request.form['new_username']
@@ -660,29 +693,29 @@ def update_check():
         else:
             flash("Old username is incorrect.")
             return render_template('editprofile.html')
-    if request.form.get('change_pwd') :   # if user wants to change username
-        if request.form.get('change_pwd'):  # if user wants to change username
-            if (password and old_password) == "" or (password == "" and old_password):
-                # check if both fields are inputted
-                flash("Please fill in both your old and new information to update your profile.")
-                return render_template('editprofile.html')
-            if password == old_password:  # check if old and new password is the same
-                flash("Your old and new password are the same. Nothing will be changed.")
-                return render_template('editprofile.html')
-            check = check_pwd(session['user'], old_password)  # check if old password is correct
-            if check != "done":
-                flash("" + check)
+    # if user wants to change password
+    if request.form.get('change_pwd'):
+        if (password and old_password) == "" or (password == "" and old_password):
+            # check if both fields are inputted
+            flash("Please fill in both your old and new information to update your profile.")
+            return render_template('editprofile.html')
+        if password == old_password:  # check if old and new password are the same
+            flash("Your old and new password are the same. Nothing will be changed.")
+            return render_template('editprofile.html')
+        check = check_pwd(session['user'], old_password)  # check if old password is correct
+        if check != "done":
+            flash("" + check)
+            return render_template('editprofile.html')
+        else:
+            if password != password_again:  # check if both passwords match
+                flash("Password does not match.")
                 return render_template('editprofile.html')
             else:
-                if password != password_again:  # check if both passwords match
-                    flash("Password does not match.")
-                    return render_template('editprofile.html')
-                else:
-                    edit_pwd(old_password, password)  # change password
-                    flash("Login with the new password.")  # go back to login
-                    return render_template('landing.html')
-        else:
-            return render_template('editprofile.html')
+                edit_pwd(old_password, password)  # change password
+                flash("Login with the new password.")  # go back to login
+                return render_template('landing.html')
+    else:
+        return render_template('editprofile.html')
 
 
 if __name__ == "__main__":
