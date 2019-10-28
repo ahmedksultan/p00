@@ -258,7 +258,6 @@ def take():
             command += " OR tags LIKE \"%"+tags[count]+"%\" " #loop through to find stories that containted those tags
             count += 1
     command += ";"
-    print(command)
     c.execute(command)
     search_results = c.fetchall() #get the results of the selection
     collection=[]
@@ -412,7 +411,6 @@ def full():  # only go to this page if there's a user
         try:
             all_edits = str(all_edits[0])[2:-3]
         except IndexError:
-            print(all_edits)
             return render_template("deleted.html")
         command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
         print(command)
@@ -467,22 +465,24 @@ def edit_tags():
     c = db.cursor()
     story_name = request.args.get('value')
     command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
-    print(command)
     c.execute(command)
     tags = str(c.fetchall())[3:-4]
     tag_coll = list()
     for tag in tags.split(' '):
-        print(tag, str(tag))
-        tag_coll.append(str(tag))
+        tag_coll.append(str(tag).strip("'"))
     tag_coll = [x for x in tag_coll if x != ""]
     return render_template("tagedit.html", tag_list=tag_coll, story_title=story_name)
 
 
-@app.route("/addtag")
+@app.route("/addtag", methods=['GET','POST'])
 def add_tag():
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command = "INSERT INTO edits (tags) VALUES(" + "\"" + request.form['new_tags'] + "\";"
+    command="SELECT tags FROM edits WHERE story_title = "+"\""+request.args.get('story')+"\";" #find the whole story
+    c.execute(command)
+    print(request.form.get('new_tags'))
+    tag=str(c.fetchall()[0])[2:-3] #format into string
+    command="UPDATE edits SET story= \""+tag+" "+request.form.get('new_tags')+"\""+ " WHERE story_title ="+"\""+request.args.get('story')+"\";"
     c.execute(command)
     db.commit()
     db.close()
@@ -495,7 +495,8 @@ def delete_tag():
     tag_name = request.args.get('tag')
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    print(request.args.get('story'), request.args.get('tag'))
+    print(request.args.get('story') + "AAAAAA")
+    print(request.args.get('tag') +"BBBBBB")
     command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
     print(command)
     c.execute(command)
@@ -504,11 +505,9 @@ def delete_tag():
     for tag in tags.split(' '):
         tag_coll.append(str(tag))
     tag_coll.remove(tag_name)
-    tag_coll = [x for x in tag_coll if ' ' in x]
+    tag_coll = [x for x in tag_coll if ' ' not in x]
     tag_coll_str = str(tag_coll)[1:-1].replace(',', ' ')
-    print(tag_coll_str, tag_coll)
     command = "UPDATE edits SET tags=" + "\"" + tag_coll_str + "\"" + "WHERE story_title=" + "\"" + story_name + "\";"
-    print(command)
     c.execute(command)
     db.commit()
     db.close()
