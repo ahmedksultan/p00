@@ -12,26 +12,28 @@ Edit a story!
 	<body bgcolor = "#FAE1DC">
 		<center>
 			<font face = "courier new">
-				<h1> Edit a story! </h1>
-			</font>
-			<form action = "/viewstory" method = "POST">
-				<big><b> Previous Entry: </b></big>
-				<br>
-				{{previous_edit | safe}}
-				<br><br>
-				<b>Edit Rules<b>:
-				<br><br>
-					Please do not use the pipe symbol ("|") <br>
-					You may use HTML tags in your text
-				<br><br>
-				<big><b> Your Entry: </b></big>
-				<br>
-				<textarea name="new_entry"> </textarea>
-				<br>
-				<input type = "submit" name = "sub1" value = "Publish">
-				<br>
-			</form>
-			{% endblock %}
+					<font color = "#C12283">
+						<h1> Edit A Story! </h1>
+					</font>
+					<font color =  "#C11B17">
+					<big>Edit Rules: Please do not use the pipe symbol ("|"). You may use HTML tags in your text.</big>
+					</font>
+				<form action = "/viewstory" method = "POST">
+					<br>
+					<big><big> <b> {{ title }} </b> </big></big><br><br>
+					<big> Previous Entry: </big>
+					<br><br>
+					{{previous_edit | safe}}
+					<br><br><br>
+					<big> Your Entry: </big>
+					<br>
+					<textarea rows = "12" cols = "100" name="new_entry"> </textarea>
+					<br>
+					<input type = "submit" name = "sub1" value = "Publish">
+					<br>
+				</form>
+				{% endblock %}
+		</font>
 		</center>
 	</body>
 </html>

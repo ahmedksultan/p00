@@ -12,12 +12,17 @@ Edit a story!
 	<body bgcolor = "#FAE1DC">
 		<center>
 			<font face = "courier new">
-				<h1> Edit tags! </h1>
-				You can only delete one tag at a time, don't abuse this power. <br>
+				<font color = "#954535">
+					<h1> Edit Tags! </h1>
+				</font>
+				<font color =  "#C11B17">
+				<big>You can only delete one tag at a time, don't abuse this power. </big><br><br>
+				</font>
 			{% for tag in tag_list%}
 				{{tag}} <input type="button" onclick="location.href='/deletetag?tag={{tag|urlencode()}}&story={{story_title|urlencode()}}';" value="Delete" name={{item}}>
 				<br>
 			{% endfor %}
+				<br>
 				<input type="text" name="new_tags">
 				<input type="submit" name="sub1" value = "Update Tags">
 		</center>

@@ -342,7 +342,7 @@ def queue():
         else:
             all_edits_list = all_edits.split("|") #show text without seperating pipes
             previous = all_edits_list[-1]
-            return render_template("storyeditor.html", previous_edit = previous) #if can edit, go to edit page
+            return render_template("storyeditor.html", title = request.args.get('value'), previous_edit = previous) #if can edit, go to edit page
 
 
 @app.route("/viewstory", methods=["GET", "POST"])  # read full story
@@ -385,6 +385,8 @@ def full():  # only go to this page if there's a user
             print(all_edits)
             return render_template("deleted.html")
         return render_template("viewstory.html", title = title, entire_story = all_edits)
+
+
 @app.route("/close")
 def close():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
@@ -503,14 +505,15 @@ def update_check():
     username = request.form['new_username']
     password = request.form['new_password']
     password_again = request.form['passwordagain']
-    print(session['user'])   # if user wants to change username
+    # if user wants to change username
     if (request.form.get('change_user')):
         if (username != None and old_username == "") or (username == "" and old_username != None):  #check if both fields are inputted
-            flash("Please fill in both your old and new username to update your profile.")
+            flash("Please fill in both your old and new information to update your profile.")
             return render_template('editprofile.html')
-        if (username == old_username):
+        if (username == old_username):  # check if old and new username is the same
             flash("Your old and new username are the same. Nothing will be changed.")
             return render_template('editprofile.html')
+        print(check_sign(old_username))
         if check_sign(old_username) != "done":  # if the old username is correct...
             check = check_sign(username)  # check if new username is valid
             if check != "done":   # if it isn't valid, flash error message
@@ -529,10 +532,10 @@ def update_check():
         if (password != None and old_password == "") or (password == "" and old_password != None):  #check if both fields are inputted
             flash("Please fill in both your old and new information to update your profile.")
             return render_template('editprofile.html')
-        if (password == old_password):
+        if (password == old_password):  # check if old and new password is the same
             flash("Your old and new password are the same. Nothing will be changed.")
             return render_template('editprofile.html')
-        if password != password_again:
+        if password != password_again:  # check if both passwords match
             flash("Password does not match.")
             return render_template('editprofile.html')
         check = check_pwd(session['user'], password)  # check if old password is correct
