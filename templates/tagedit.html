@@ -15,11 +15,13 @@ Edit a story!
 				<h1> Edit tags! </h1>
 				You can only delete one tag at a time, don't abuse this power. <br>
 			{% for tag in tag_list%}
-				{{tag}} <input type="button" onclick="location.href='/deletetag?tag={{tag|urlencode()}}&story={{story_title|urlencode()}}';" value="Delete" name={{item}}>
+				{{tag}} <input type="button" onclick="location.href='/deletetag?tag={{tag|urlencode()}}&story={{story_title|urlencode()}}';" value="Delete" name={{tag}}>
 				<br>
 			{% endfor %}
+			<form method="GET" action="location.href='/addtag?story={{story_title|urlencode()}}';">
 				<input type="text" name="new_tags">
-				<input type="submit" name="sub1" value = "Update Tags">
+				<button type="submit">Update Tags</button>
+			</form>
 		</center>
 	{% endblock %}
 	</body>
