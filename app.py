@@ -371,6 +371,8 @@ def view():  # only go to this page if there's a user
             #Updates Database
             #commands and stuff
             return render_template("viewstory.html", title = title, entire_story = entire_story)
+
+
 @app.route("/fullstory")
 def full():  # only go to this page if there's a user
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
@@ -391,7 +393,16 @@ def full():  # only go to this page if there's a user
         except IndexError:
             print(all_edits)
             return render_template("deleted.html")
-        return render_template("viewstory.html", title = title, entire_story = all_edits)
+        command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
+        print(command)
+        c.execute(command)
+        tags = str(c.fetchall())[3:-4]
+        tag_coll = list()
+        for tag in tags.split(' '):
+            print(tag, str(tag))
+            tag_coll.append(str(tag))
+        tag_coll = [x for x in tag_coll if x != ""]
+        return render_template("viewstory.html", title = title, entire_story = all_edits, tag_list=tag_coll)
 
 
 @app.route("/close")
@@ -411,9 +422,18 @@ def close():
     command="SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";" #get new story now
     c.execute(command)
     view=str(c.fetchall()[0])[2:-3]
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
+    print(command)
+    c.execute(command)
+    tags = str(c.fetchall())[3:-4]
+    tag_coll = list()
+    for tag in tags.split(' '):
+        print(tag, str(tag))
+        tag_coll.append(str(tag))
+    tag_coll = [x for x in tag_coll if x != ""]
     db.commit()
     db.close()
-    return render_template("closestory.html", title = request.args.get('value'), entire_story = view)#displays story by replacing all | with empty string
+    return render_template("closestory.html", title = request.args.get('value'), entire_story = view, tag_list=tag_coll)#displays story by replacing all | with empty string
 
 
 @app.route("/tagedit")
