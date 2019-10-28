@@ -12,10 +12,15 @@ View a story!
 	<body bgcolor = "#FAE1DC">
 		<center>
 			<font face = "courier new">
-				<h1> View a story! </h1>
-			</font>
+				<font color = "#A52A2A">
+					<h1> View a story! </h1>
+				</font>
 			<h3> Title: </h3>
 			<h1> {{ title }} </h1>
+			<b>
+ 			{% for tag in tag_list%}
+ 				{{tag}}
+ 			{% endfor %}</b>
 			<h3> Story: </h3>
 			<h1>-----------------------------------------------------</h1>
 			<br>
@@ -23,6 +28,7 @@ View a story!
 			<br>
 			<h1>-----------------------------------------------------</h1>
 			{% endblock %}
+		</font>
 		</center>
 	</body>
 </html>

@@ -357,12 +357,19 @@ def queue():
         all_edits = c.fetchall()
         all_edits = str(all_edits)[3:-4] #format
         title_save = request.args.get('value')
+        command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
+        c.execute(command)
+        tags = str(c.fetchall())[3:-4]
+        tag_coll = list()
+        for tag in tags.split(' '):
+            tag_coll.append(str(tag).strip("'"))
+        tag_coll = [x for x in tag_coll if x != ""]
         if all_edits.count("|") >= 200: #if no more edits allowed
-            return render_template("viewstory.html", title = title_save, entire_story = all_edits) #go straight to viewing full story
+            return render_template("viewstory.html", title = title_save, entire_story = all_edits, tag_list=tag_coll) #go straight to viewing full story
         else:
             all_edits_list = all_edits.split("|") #show text without seperating pipes
             previous = all_edits_list[-1]
-            return render_template("storyeditor.html", previous_edit = previous, title = title_save) #if can edit, go to edit page
+            return render_template("storyeditor.html", previous_edit = previous, title = title_save, tag_list=tag_coll) #if can edit, go to edit page
 
 
 
@@ -423,9 +430,18 @@ def view():  # only go to this page if there's a user
             c.execute(command)
             all_edits = c.fetchall()
             entire_story = str(all_edits)[3:-4]
+
+            command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
+            c.execute(command)
+            tags = str(c.fetchall())[3:-4]
+            tag_coll = list()
+            for tag in tags.split(' '):
+                tag_coll.append(str(tag).strip("'"))
+            tag_coll = [x for x in tag_coll if x != ""]
+
             db.commit()
             db.close()
-            return render_template("viewstory.html", title = title, entire_story = entire_story)
+            return render_template("viewstory.html", title = title, entire_story = entire_story, tag_list=tag_coll)
 
 
 @app.route("/fullstory")

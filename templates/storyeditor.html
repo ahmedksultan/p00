@@ -21,6 +21,10 @@ Edit a story!
 				<form action = "/viewstory" method = "POST">
 					<br>
 					<big><big> <b> {{ title }} </b> </big></big><br><br>
+					<b>
+		 			{% for tag in tag_list%}
+		 				{{tag}}
+		 			{% endfor %}</b><br><br><br>
 					<big> Previous Entry: </big>
 					<br><br>
 					{{previous_edit | safe}}
