@@ -505,15 +505,15 @@ def edit_tags():
     return render_template("tagedit.html", tag_list=tag_coll, story_title=story_name)
 
 
-@app.route("/addtag", methods=['GET','POST'])
+@app.route("/addtag", methods=['GET', 'POST'])
 def add_tag():
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command="SELECT tags FROM edits WHERE story_title = "+"\""+request.args.get('story')+"\";" #find the whole story
+    command = "SELECT tags FROM edits WHERE story_title = " + "\"" + request.args.get('story') + "\";"  # find the whole story
     c.execute(command)
-    print(request.form.get('new_tags'))
-    tag=str(c.fetchall()[0])[2:-3] #format into string
-    command="UPDATE edits SET story= \""+tag+" "+request.form.get('new_tags')+"\""+ " WHERE story_title ="+"\""+request.args.get('story')+"\";"
+    tag = str(c.fetchall()[0])[2:-3]  # format into string
+    command="UPDATE edits SET tags= \"" + str(tag) + " " + str(request.form.get('new_tags')) + "\"" + " WHERE story_title ="+"\""+request.args.get('story')+"\";"
+    print(command)
     c.execute(command)
     db.commit()
     db.close()
@@ -557,8 +557,7 @@ def delete():
     c.execute(command)
     db.commit()
     db.close()
-    return render_template("deletestory.html", title = request.args.get('value'))
-
+    return render_template("deletestory.html", title=request.args.get('value'))
 
 @app.route("/updateprofile")
 def update():
