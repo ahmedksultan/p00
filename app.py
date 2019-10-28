@@ -382,7 +382,16 @@ def view():  # only go to this page if there's a user
         else:
             #Updates Database
             #commands and stuff
-            return render_template("viewstory.html", title = title, entire_story = entire_story)
+            command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
+            print(command)
+            c.execute(command)
+            tags = str(c.fetchall())[3:-4]
+            tag_coll = list()
+            for tag in tags.split(' '):
+                print(tag, str(tag))
+                tag_coll.append(str(tag))
+            tag_coll = [x for x in tag_coll if x != ""]
+            return render_template("viewstory.html", title = title, entire_story = entire_story, tag_list=tag_coll)
 
 
 @app.route("/fullstory")
