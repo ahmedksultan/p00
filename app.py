@@ -381,35 +381,42 @@ def queue():
         return redirect(url_for("start"))
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # finds ip
     ip = request.environ["REMOTE_ADDR"]
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
     if len(waitlist) == 0 and ip not in waitlist:
         waitlist.append(request.environ["REMOTE_ADDR"])  # if ip is not in waitlist, add it
-    if waitlist[0] != ip:
-        return "Please refresh after "+str(waitlist.index(ip))+" " \
-                "minutes as someone is currently editing."  # calculates place in queue and gives estimate wait time
-    else:
-        db = sqlite3.connect(DB_FILE)
-        c = db.cursor()
-        command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";"
-        # find the text of a specified story title
-        c.execute(command)
-        all_edits = c.fetchall()
-        all_edits = str(all_edits)[3:-4]  # format string for readability
-        title_save = request.args.get('value')
-        command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
-        c.execute(command)
-        # retrieve all the tags for the story
-        tags = str(c.fetchall())[3:-4]
-        tag_coll = list()
-        for tag in tags.split(' '):
-            tag_coll.append(str(tag).strip("'"))
-        tag_coll = [x for x in tag_coll if x != ""]
-        if all_edits.count("|") >= 200:  # if no more edits allowed
-            return render_template("viewstory.html", title=title_save, entire_story=all_edits, tag_list=tag_coll)
-            # go straight to viewing full story
+    command = "SELECT stories_edited FROM users WHERE username = \"" +session.get('user')+"\";"
+    c.execute(command)
+    editedstories=str(c.fetchall())
+    title_save = request.args.get('value')
+    command = "SELECT story FROM edits WHERE story_title = \""+title_save+"\";"
+    # find the text of a specified story title
+    c.execute(command)
+    all_edits = c.fetchall()
+    all_edits = str(all_edits)[3:-4]  # format string for readability
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + title_save + "\";"
+    c.execute(command)
+    # retrieve all the tags for the story
+    tags = str(c.fetchall())[3:-4]
+    tag_coll = list()
+    for tag in tags.split(' '):
+        tag_coll.append(str(tag).strip("'"))
+    tag_coll = [x for x in tag_coll if x != ""]
+    if title_save not in editedstories:
+        if waitlist[0] != ip:
+            return "Please refresh after "+str(waitlist.index(ip))+" " \
+                    "minutes as someone is currently editing."  # calculates place in queue and gives estimate wait time
         else:
-            all_edits_list = all_edits.split("|")  # show text without separating pipes
-            previous = all_edits_list[-1]
-            return render_template("storyeditor.html", previous_edit=previous, title=title_save, tag_list=tag_coll)
+            if all_edits.count("|") >= 200:  # if no more edits allowed
+                return render_template("viewstory.html", title=title_save, entire_story=all_edits, tag_list=tag_coll)
+                # go straight to viewing full story
+            else:
+                all_edits_list = all_edits.split("|")  # show text without separating pipes
+                previous = all_edits_list[-1]
+                return render_template("storyeditor.html", previous_edit=previous, title=title_save, tag_list=tag_coll)
+    else:
+        return render_template("viewstory.html", title=title_save, entire_story=all_edits, tag_list=tag_coll)
+
 
 
 @app.route("/viewstory", methods=["GET", "POST"])  # read full story after using story editor
