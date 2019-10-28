@@ -21,7 +21,7 @@ Editing Tags
 				{{tag}} <input type="button" onclick="location.href='/deletetag?tag={{tag|urlencode()}}&story={{story_title|urlencode()}}';" value="Delete" name={{tag}}>
 				<br>
 			{% endfor %}
-			<form method="GET" action="location.href='/addtag?story={{story_title|urlencode()}}';">
+			<form method="POST" action=/addtag?story={{story_title|urlencode()}}">
 				<input type="text" name="new_tags">
 				<button type="submit">Update Tags</button>
 			</form>

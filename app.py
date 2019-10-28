@@ -525,10 +525,11 @@ def edit_tags():
 def add_tag():
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command = "SELECT tags FROM edits WHERE story_title = " + "\"" + request.args.get('story') + "\";"  # find the whole story
+    command = "SELECT tags FROM edits WHERE story_title = " + "\"" + request.args.get('story') + ";"  # find the whole story
+    print(command)
     c.execute(command)
     tag = str(c.fetchall()[0])[2:-3]  # format into string
-    command="UPDATE edits SET tags= \"" + str(tag) + " " + str(request.form.get('new_tags')) + "\"" + " WHERE story_title ="+"\""+request.args.get('story')+"\";"
+    command = "UPDATE edits SET tags= \"" + str(tag) + " " + str(request.form['new_tags']) + "\"" + " WHERE story_title =" + "\"" + request.args.get('story')  + ";"
     print(command)
     c.execute(command)
     db.commit()
@@ -542,19 +543,15 @@ def delete_tag():
     tag_name = request.args.get('tag')
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    print(request.args.get('story') + "AAAAAA")
-    print(request.args.get('tag') +"BBBBBB")
     command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
-    print(command)
     c.execute(command)
     tags = str(c.fetchall())[3:-4]
     tag_coll = list()
     for tag in tags.split(' '):
-        tag_coll.append(str(tag))
-    tag_coll.remove(tag_name)
-    tag_coll = [x for x in tag_coll if ' ' not in x]
-    tag_coll_str = str(tag_coll)[1:-1].replace(',', ' ')
-    command = "UPDATE edits SET tags=" + "\"" + tag_coll_str + "\"" + "WHERE story_title=" + "\"" + story_name + "\";"
+        tag_coll.append(str(tag).strip())
+    tag_coll = [x for x in tag_coll if ( "'" not in x) or (tag_name not in x)]
+    tag_coll_str = str(tag_coll)[1:-1].replace(',', ' ').replace('"', "").replace("'", "")
+    command = "UPDATE edits SET tags=" + "\"" + tag_coll_str + "\"" + " WHERE story_title=" + "\"" + story_name + "\";"
     c.execute(command)
     db.commit()
     db.close()
