@@ -17,19 +17,16 @@ Edit a story!
 			<form action = "/viewstory" method = "POST">
 				<big><b> Previous Entry: </b></big>
 				<br>
-				{{ previous_edit }}
+				{{previous_edit | safe}}
 				<br><br>
 				<b>Edit Rules<b>:
-				<br>
-				<ul>
-					<li> Please do not use the pipe symbol ("|") </li>
-					<li> You may use HTML tags in your text </li>
-				</ul>
-				<br>
+				<br><br>
+					Please do not use the pipe symbol ("|") <br>
+					You may use HTML tags in your text
+				<br><br>
 				<big><b> Your Entry: </b></big>
 				<br>
-				<textarea cols = "50" name="new_entry">
-				</textarea>
+				<textarea name="new_entry"> </textarea>
 				<br>
 				<input type = "submit" name = "sub1" value = "Publish">
 				<br>

@@ -14,7 +14,11 @@ Search Results
           <h1> <font color = "#85B27A"> All Stories </font> </h1>
       {%for item in display%}
       <ul>
-        <li><a href="/editstory?value={{item}}">{{item}}</a></li>
+          <li><a href="/editstory?value={{item|urlencode()}}">{{item}}</a>
+            <input type="button" onclick="location.href='/close?value={{item|urlencode()}}';" value="Close Story" name={{item}}>
+            <input type="button" onclick="location.href='/tagedit?value={{item|urlencode()}}';" value="Edit Tags" name={{item}}>
+            <input type="button" onclick="location.href='/delete?value={{item|urlencode()}}';" value="Delete Story" name={{item}}>
+          </li>
       </ul>
       {% endfor %}
         </center>

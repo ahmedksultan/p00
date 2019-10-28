@@ -216,6 +216,7 @@ def take():
         return redirect(url_for("start"))
     keywords = request.form['keywords']  # retrieve search input
     tags = request.form['tags']
+
     if keywords == "" and tags == "": #refresh page is no input but submitted
         return render_template('searchpage.html')
     if len(tags) > 0: #if tag is inputted, split tag to seperate tags
@@ -226,7 +227,7 @@ def take():
         count = 0
         while count < len(keywords): #loop through to see if any titles contain the keywords inputted
             if count == len(keywords)-1:
-                command += "story_title LIKE \"%" + keywords[count] + "%\" "
+                command += "story_title LIKE \"%" + keywords[count] + "%\""
             else:
                 command += "story_title LIKE \"%" + keywords[count] + "%\" OR "
             count += 1
@@ -245,17 +246,19 @@ def take():
             command += " OR tags LIKE \"%"+tags[count]+"%\" " #loop through to find stories that containted those tags
             count += 1
     command += ";"
+    print(command)
     c.execute(command)
     search_results = c.fetchall() #get the results of the selection
     collection=[]
     for item in search_results:
         if str(item) not in collection:
-            collection.append(str(item)) #make tuple into strings
+            collection.append(str(item)[2:-3]) #make tuple into strings
     db.commit()  # save changes
     db.close()  # close database
     return render_template('searchresults.html', key=request.form['keywords'],
                                                  tagged=request.form['tags'],
                                                  results=collection)
+
 
 @app.route("/allstories")
 def displayAll():
@@ -265,12 +268,11 @@ def displayAll():
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    command="SELECT story_title from edits"
+    command="SELECT story_title from edits" #get all stories
     c.execute(command)
     all=c.fetchall()
-    count = 0
     collection=[]
-    for item in all:
+    for item in all: #turn every item into a string and put it into a list to display
         if str(item) not in collection:
             collection.append(str(item)[2:-3])
     sorted(collection)
@@ -322,35 +324,33 @@ def see_entry():
 
 @app.route("/editstory")  # editing page
 def queue():
-    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)#finds ip
     ip=request.environ["REMOTE_ADDR"]
     if len(waitlist)==0 and ip not in waitlist:
-        waitlist.append(request.environ["REMOTE_ADDR"])
+        waitlist.append(request.environ["REMOTE_ADDR"]) #if ip is not in waitlist, add it
     if waitlist[0]!=ip:
-        return "Please refresh after "+str(waitlist.index(p))+" minutes as someone is currently editing."
-    #another "if"?
+        return "Please refresh after "+str(waitlist.index(p))+" minutes as someone is currently editing." #calculates place in queue and gives estimate wait time
     else:
         db = sqlite3.connect(DB_FILE)
-        command = "SELECT story FROM edits"
+        c=db.cursor()
+        command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";" #find the text of a specified story title
         c.execute(command)
         all_edits = c.fetchall()
-        all_edits = str(all_edits[0])[2:-3]
-        all_edits_list = all_edits.split("|")
-        previous = all_edits_list[-1]
-        return render_template("storyeditor.html", previous_edit = previous)
-#def retrieve_latest():  # only go to this page if there's a user
-#    if session.get('user') is None:
-#        return redirect(url_for("start"))
-#    return "Under construction."
+        all_edits = str(all_edits)[3:-4] #format
+        if all_edits.count("|") >= 200: #if no more edits allowed
+            return render_template("viewstory.html", title = request.args.get('value'), entire_story = all_edits) #go straight to viewing full story
+        else:
+            all_edits_list = all_edits.split("|") #show text without seperating pipes
+            previous = all_edits_list[-1]
+            return render_template("storyeditor.html", previous_edit = previous) #if can edit, go to edit page
 
 
-@app.route("/viewstory")  # read full story
+@app.route("/viewstory", methods=["GET", "POST"])  # read full story
 def view():  # only go to this page if there's a user
-    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)#remove from queue
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
         waitlist.remove(ip)
-    waitlist.remove(ip)
     if session.get('user') is None:
         return redirect(url_for("start"))
     else:
@@ -364,6 +364,120 @@ def view():  # only go to this page if there's a user
             #Updates Database
             #commands and stuff
             return render_template("viewstory.html", title = title, entire_story = entire_story)
+@app.route("/fullstory")
+def full():  # only go to this page if there's a user
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
+    ip=request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    if session.get('user') is None:
+        return redirect(url_for("start"))
+    else:
+        command = "SELECT story FROM edits WHERE story_title = \""+request.args.get('value')+"\";"#display requested story
+        c.execute(command)
+        title = request.args.get('value')
+        all_edits = c.fetchall()
+        try:
+            all_edits = str(all_edits[0])[2:-3]
+        except IndexError:
+            print(all_edits)
+            return render_template("deleted.html")
+        return render_template("viewstory.html", title = title, entire_story = all_edits)
+@app.route("/close")
+def close():
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
+    ip=request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    command="SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";" #find the whole story
+    c.execute(command)
+    view=str(c.fetchall()[0])[2:-3] #format into string
+    command="UPDATE edits SET story= \""+view+"||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\""+ " WHERE story_title ="+"\""+request.args.get('value')+"\";"
+    #add 200 pipes to end editing
+    c.execute(command)
+    command="SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";" #get new story now
+    c.execute(command)
+    view=str(c.fetchall()[0])[2:-3]
+    db.commit()
+    db.close()
+    return render_template("closestory.html", title = request.args.get('value'), entire_story = view)#displays story by replacing all | with empty string
+
+
+@app.route("/tagedit")
+def edit_tags():
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr)  # remove from queue
+    ip = request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    story_name = request.args.get('value')
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
+    print(command)
+    c.execute(command)
+    tags = str(c.fetchall())[3:-4]
+    tag_coll = list()
+    for tag in tags.split(' '):
+        print(tag, str(tag))
+        tag_coll.append(str(tag))
+    tag_coll = [x for x in tag_coll if x != ""]
+    return render_template("tagedit.html", tag_list=tag_coll, story_title=story_name)
+
+
+@app.route("/addtag")
+def add_tag():
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    command = "INSERT INTO edits (tags) VALUES(" + "\"" + request.form['new_tags'] + "\";"
+    c.execute(command)
+    db.commit()
+    db.close()
+    return redirect(url_for('story'))
+
+
+@app.route("/deletetag")
+def delete_tag():
+    story_name = request.args.get('story')
+    tag_name = request.args.get('tag')
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    print(request.args.get('story'), request.args.get('tag'))
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
+    print(command)
+    c.execute(command)
+    tags = str(c.fetchall())[3:-4]
+    tag_coll = list()
+    for tag in tags.split(' '):
+        tag_coll.append(str(tag))
+    tag_coll.remove(tag_name)
+    tag_coll = [x for x in tag_coll if ' ' in x]
+    tag_coll_str = str(tag_coll)[1:-1].replace(',', ' ')
+    print(tag_coll_str, tag_coll)
+    command = "UPDATE edits SET tags=" + "\"" + tag_coll_str + "\"" + "WHERE story_title=" + "\"" + story_name + "\";"
+    print(command)
+    c.execute(command)
+    db.commit()
+    db.close()
+    return redirect(url_for('story'))
+
+
+@app.route("/delete")
+def delete():
+    request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
+    ip=request.environ["REMOTE_ADDR"]
+    if ip in waitlist:
+        waitlist.remove(ip)
+    db = sqlite3.connect(DB_FILE)
+    c = db.cursor()
+    command="DELETE FROM edits WHERE story_title = \""+request.args.get('value')+"\";" #delete entire row from edits
+    c.execute(command)
+    db.commit()
+    db.close()
+    return render_template("deletestory.html", title = request.args.get('value'))
 
 
 @app.route("/updateprofile")
@@ -371,7 +485,7 @@ def update():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     if session.get('user') is None:  # only go to this page if there's a user
         return redirect(url_for("start"))
     else:
