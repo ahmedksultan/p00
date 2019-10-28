@@ -12,13 +12,14 @@ Search Results
     <center>
       <font face = "courier new">
           <h1> <font color = "#85B27A"> All Stories </font> </h1>
+    </center>
       {%for item in display%}
       <ul>
-          <li><a href="/editstory?value={{item|urlencode()}}">{{item}}</a>
-          </li>
+        <li>
+          <a href="/editstory?value={{item|urlencode()}}">{{item}}</a>
+        </li>
       </ul>
       {% endfor %}
-        </center>
           {% endblock %}
         </font>
     </body>

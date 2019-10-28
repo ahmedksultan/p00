@@ -15,7 +15,7 @@ Editing Story
 						<h1> Edit A Story! </h1>
 					</font>
 					<font color =  "#C11B17">
-					<big>Edit Rules: Please do not use the pipe symbol ("|"). You may use HTML tags in your text.</big>
+					<big>Edit Rules: Please do not use the pipe symbol ("|"). You may use HTML tags in your text. You are limited to 600 characters.</big>
 					</font>
 				<form action = "/viewstory" method = "POST">
 					<br>
@@ -26,7 +26,7 @@ Editing Story
 					<br><br><br>
 					<big> Your Entry: </big>
 					<br>
-					<textarea rows = "12" cols = "100" name="new_entry"> </textarea>
+					<textarea rows = "12" cols = "100" maxlength = "600" name="new_entry"> </textarea>
 					<br>
 					<input type = "submit" name = "sub1" value = "Publish">
 					<br>
