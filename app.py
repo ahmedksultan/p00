@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from data import secret
 import sqlite3  # enable control of an sqlite database
-from datetime import datetime
 app = Flask(__name__)
 
 username = ""
@@ -75,11 +74,12 @@ def check_pwd(user, pwd):  # function for checking if a password is correct
     else:
         return "Old password is incorrect."  # if username is not in database
 
+
 def edit_name(old_user, new_user):  # function for editing the username
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip=request.environ["REMOTE_ADDR"]
     if ip in waitlist:
-        waitlist.remove()
+        waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     command = "UPDATE users SET username = \"" + new_user + "\" WHERE username = \"" + old_user + "\";"  # update username
@@ -105,11 +105,13 @@ def edit_pwd(old_pwd, new_pwd):  # function for changing password
 
 # =================== Part 2: Routes ===================
 
-#def is_admin():
- #   db = sqlite3.connect(DB_FILE)  # open database
-  #  c = db.cursor()
-   # command = "SELECT is_admin FROM users WHERE username=" + "\"" + session['user'] + "\";"
-    #if session['user']
+def is_admin():
+    db = sqlite3.connect(DB_FILE)  # open database
+    c = db.cursor()
+    command = "SELECT is_admin FROM users WHERE username=" + "\"" + session['user'] + "\";"
+    c.execute(command)
+    ouptut = int(str(c.fetchall())[2:-3])
+    return bool(ouptut)
 
 
 @app.route("/")  # landing page
@@ -192,12 +194,14 @@ def story():
         c = db.cursor()
         command="SELECT stories_edited FROM users WHERE \""+session.get('user')+"\" =username"
         c.execute(command)
-        mystories = c.fetchall() #get the results of the selection
+        mystories = c.fetchall()  # get the results of the selection
         mystories=str(mystories[0])[2:-3]
         collection=mystories.split(",")
         db.commit()  # save changes
         db.close()  # close database
-        return render_template('homepage.html', name=session['user'], storycoll=collection)
+        if is_admin():
+            return render_template('homepage.html', name=session['user'], storycoll=collection)
+        return render_template('homepagePEASANT.html', name=session['user'], storycoll=collection)
 
 
 @app.route("/search")  # search page
@@ -225,7 +229,7 @@ def take():
     keywords = request.form['keywords']  # retrieve search input
     tags = request.form['tags']
 
-    if keywords == "" and tags == "": #refresh page is no input but submitted
+    if keywords == "" and tags == "":  # refresh page is no input but submitted
         return render_template('searchpage.html')
     if len(tags) > 0: #if tag is inputted, split tag to seperate tags
         tags = tags.strip().split(" ")
@@ -263,9 +267,13 @@ def take():
             collection.append(str(item)[2:-3]) #make tuple into strings
     db.commit()  # save changes
     db.close()  # close database
-    return render_template('searchresults.html', key=request.form['keywords'],
-                                                 tagged=request.form['tags'],
-                                                 results=collection)
+    if is_admin():
+        return render_template('searchresults.html', key=request.form['keywords'],
+                                                     tagged=request.form['tags'],
+                                                    results=collection)
+    return render_template('searchresultsPEASANT.html', key=request.form['keywords'],
+                                                     tagged=request.form['tags'],
+                                                    results=collection)
 
 
 @app.route("/allstories")
@@ -280,13 +288,16 @@ def displayAll():
     c.execute(command)
     all=c.fetchall()
     collection=[]
-    for item in all: #turn every item into a string and put it into a list to display
+    for item in all: # turn every item into a string and put it into a list to display
         if str(item) not in collection:
             collection.append(str(item)[2:-3])
     sorted(collection)
     db.commit()  # save changes
     db.close()
-    return render_template('allstory.html', display=collection)
+    if is_admin():
+        return render_template('allstory.html', display=collection)
+    return render_template('allstoryPEASANT.html', display=collection)
+
 
 @app.route("/logout")  # log out
 def logout():
@@ -369,41 +380,9 @@ def view():  # only go to this page if there's a user
             flash("Please enter something for the new entry.")
             return redirect(url_for("queue")) #no entry, goes back to editing story
         else:
-            #Updates 'story' entry in the table 'edits' for story 'story_title'
-            command = "SELECT story FROM edits WHERE story_title =\"" + str(request.args.get('value')) + "\";"
-            c.execute(command)
-            current_edits = c.fetchall()
-            current_edits = str(current_edits)[3:-4] #format
-            updated_edits = current_edits + " | " + new_entry #updated = current + new
-            command = "UPDATE edits SET story=\"" + updated_edits + "\" WHERE story_title = \"" + str(request.args.get('value')) + "\';"
-            c.execute(command)
-            
-            #Updates 'last_editor' entry in table 'edits' for story 'story_title'
-            last_editor = session['user']
-            command = "UPDATE edits SET last_editor=\"" + last_editor + "\"" + "WHERE story_title = \"" + str(request.args.get('value')) + "\";"
-            c.execute(command)
-            
-            #Updates 'timestamp' entry in the table 'edits' for story 'story_title'
-            current_time = datetime.utcnow()
-            command = "UPDATE edits SET time_stamp=\"" + current_time + "\" WHERE story_title =\"" + str(request.args.get('value')) + "\";"
-            
-            #Updates 'stories_edited' entry in the table 'users' for user 'user'
-            command = "SELECT stories_edited FROM users WHERE username = " + session['user'] + ";"
-            c.execute(command)
-            current_stories_edited = c.fetchall()
-            current_stories_edited = str(current_stories_edited)[3:-4]
-            updated_stories_edited = current_stories_edited + "," + request.form['story_title']
-            command = "UPDATE users SET stories_edited=\"" + updated_stories_edited + "\" WHERE story_title = \"" + str(request.args.get('value')) + "\";"
-            c.execute(command)
-            
-            #stuff
-            title = request.form['story_title']
-            command = "SELECT story FROM edits WHERE story_title =\"" + title + "\";"
-            c.execute(command)
-            all_edits = c.fetchall()
-            entire_story = str(all_edits)[3:-4]
+            #Updates Database
+            #commands and stuff
             return render_template("viewstory.html", title = title, entire_story = entire_story)
-
 @app.route("/fullstory")
 def full():  # only go to this page if there's a user
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
@@ -425,6 +404,7 @@ def full():  # only go to this page if there's a user
             print(all_edits)
             return render_template("deleted.html")
         return render_template("viewstory.html", title = title, entire_story = all_edits)
+
 
 @app.route("/close")
 def close():

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% extends 'template.html' %}
+{% block title %}
+Search Results
+{% endblock %}
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    {% block body %}
+  </head>
+  <body bgcolor = "#FAE1DC">
+    <center>
+      <font face = "courier new">
+          <h1> <font color = "#3BB9FF"> Search Results </font> </h1>
+            <h2><br>Keywords: </h2>{{key}}
+            <h2><br>Tags: </h2>{{tagged}}
+        </center>
+            {%for item in results%}
+            <ul>
+              <li><a href="/editstory?value={{item|urlencode()}}">{{item}}</a>
+              </li>
+            </ul>
+            {% endfor %}
+            <center>
+            <input type="button" onclick="location.href='/search';" value="Back to Search">
+          {% endblock %}
+      </font>
+    </center>
+  </body>
+  </head>
+</html>
