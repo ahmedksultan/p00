@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from data import secret
 import sqlite3  # enable control of an sqlite database
+from datetime import datetime
 app = Flask(__name__)
 
 username = ""
@@ -368,9 +369,41 @@ def view():  # only go to this page if there's a user
             flash("Please enter something for the new entry.")
             return redirect(url_for("queue")) #no entry, goes back to editing story
         else:
-            #Updates Database
-            #commands and stuff
+            #Updates 'story' entry in the table 'edits' for story 'story_title'
+            command = "SELECT story FROM edits WHERE story_title =\"" + str(request.args.get('value')) + "\";"
+            c.execute(command)
+            current_edits = c.fetchall()
+            current_edits = str(current_edits)[3:-4] #format
+            updated_edits = current_edits + " | " + new_entry #updated = current + new
+            command = "UPDATE edits SET story=\"" + updated_edits + "\" WHERE story_title = \"" + str(request.args.get('value')) + "\';"
+            c.execute(command)
+            
+            #Updates 'last_editor' entry in table 'edits' for story 'story_title'
+            last_editor = session['user']
+            command = "UPDATE edits SET last_editor=\"" + last_editor + "\"" + "WHERE story_title = \"" + str(request.args.get('value')) + "\";"
+            c.execute(command)
+            
+            #Updates 'timestamp' entry in the table 'edits' for story 'story_title'
+            current_time = datetime.utcnow()
+            command = "UPDATE edits SET time_stamp=\"" + current_time + "\" WHERE story_title =\"" + str(request.args.get('value')) + "\";"
+            
+            #Updates 'stories_edited' entry in the table 'users' for user 'user'
+            command = "SELECT stories_edited FROM users WHERE username = " + session['user'] + ";"
+            c.execute(command)
+            current_stories_edited = c.fetchall()
+            current_stories_edited = str(current_stories_edited)[3:-4]
+            updated_stories_edited = current_stories_edited + "," + request.form['story_title']
+            command = "UPDATE users SET stories_edited=\"" + updated_stories_edited + "\" WHERE story_title = \"" + str(request.args.get('value')) + "\";"
+            c.execute(command)
+            
+            #stuff
+            title = request.form['story_title']
+            command = "SELECT story FROM edits WHERE story_title =\"" + title + "\";"
+            c.execute(command)
+            all_edits = c.fetchall()
+            entire_story = str(all_edits)[3:-4]
             return render_template("viewstory.html", title = title, entire_story = entire_story)
+
 @app.route("/fullstory")
 def full():  # only go to this page if there's a user
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
@@ -392,6 +425,7 @@ def full():  # only go to this page if there's a user
             print(all_edits)
             return render_template("deleted.html")
         return render_template("viewstory.html", title = title, entire_story = all_edits)
+
 @app.route("/close")
 def close():
     request.environ.get('HTTP_X_REAL_IP', request.remote_addr) #remove from queue
