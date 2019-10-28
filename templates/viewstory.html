@@ -14,11 +14,14 @@ View a story!
 			<font face = "courier new">
 				<h1> View a story! </h1>
 			</font>
-			<h3> {{ title }} </h3>
-			<br>
+			<h3> Title: </h3>
+			<h1> {{ title }} </h1>
+			<h3> Story: </h3>
+			<h1>-----------------------------------------------------</h1>
 			<br>
 			{{ entire_story | safe | replace("|","")}}
 			<br>
+			<h1>-----------------------------------------------------</h1>
 			{% endblock %}
 		</center>
 	</body>

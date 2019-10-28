@@ -15,6 +15,7 @@ Edit a story!
 				<h1> Edit a story! </h1>
 			</font>
 			<form action = "/viewstory" method = "POST">
+				<h1> Title: {{title}} </h1>
 				<big><b> Previous Entry: </b></big>
 				<br>
 				{{previous_edit | safe}}
@@ -23,6 +24,9 @@ Edit a story!
 				<br><br>
 					Please do not use the pipe symbol ("|") <br>
 					You may use HTML tags in your text
+				<br><br>
+				<big><b> Enter title again: </b></big>
+				<textarea name="title_again"></textarea>
 				<br><br>
 				<big><b> Your Entry: </b></big>
 				<br>
