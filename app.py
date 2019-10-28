@@ -104,6 +104,13 @@ def edit_pwd(old_pwd, new_pwd):  # function for changing password
 
 # =================== Part 2: Routes ===================
 
+#def is_admin():
+ #   db = sqlite3.connect(DB_FILE)  # open database
+  #  c = db.cursor()
+   # command = "SELECT is_admin FROM users WHERE username=" + "\"" + session['user'] + "\";"
+    #if session['user']
+
+
 @app.route("/")  # landing page
 def start():
     print(app)
