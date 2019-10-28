@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from data import secret
+from datetime import datetime
 import sqlite3  # enable control of an sqlite database
 app = Flask(__name__)
 
@@ -355,12 +356,14 @@ def queue():
         c.execute(command)
         all_edits = c.fetchall()
         all_edits = str(all_edits)[3:-4] #format
+        title_save = request.args.get('value')
         if all_edits.count("|") >= 200: #if no more edits allowed
-            return render_template("viewstory.html", title = request.args.get('value'), entire_story = all_edits) #go straight to viewing full story
+            return render_template("viewstory.html", title = title_save, entire_story = all_edits) #go straight to viewing full story
         else:
             all_edits_list = all_edits.split("|") #show text without seperating pipes
             previous = all_edits_list[-1]
-            return render_template("storyeditor.html", title = request.args.get('value'), previous_edit = previous) #if can edit, go to edit page
+            return render_template("storyeditor.html", previous_edit = previous, title = title_save) #if can edit, go to edit page
+
 
 
 @app.route("/viewstory", methods=["GET", "POST"])  # read full story
@@ -379,16 +382,50 @@ def view():  # only go to this page if there's a user
             flash("Please enter something for the new entry.")
             return redirect(url_for("queue")) #no entry, goes back to editing story
         else:
-            #Updates Database
-            #commands and stuff
-            command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
+            #Updates 'story' entry in the table 'edits' for story 'story_title'
+            #title = request.form['title_again']
+            title = request.args.get('value')
+            command = "SELECT story FROM edits WHERE story_title =\"" + title + "\";"
+            print(command)
             c.execute(command)
-            tags = str(c.fetchall())[3:-4]
-            tag_coll = list()
-            for tag in tags.split(' '):
-                tag_coll.append(str(tag).strip("'"))
-            tag_coll = [x for x in tag_coll if x != ""]
-            return render_template("viewstory.html", title = title, entire_story = entire_story, tag_list=tag_coll)
+            current_edits = c.fetchall()
+            current_edits = str(current_edits)[3:-4] #format
+            updated_edits = current_edits + " | " + new_entry #updated = current + new
+            command = "UPDATE edits SET story=\"" + updated_edits + "\" WHERE story_title = \"" + title + "\";"
+            print(command)
+            c.execute(command)
+
+            #Updates 'last_editor' entry in table 'edits' for story 'story_title'
+            last_editor = session['user']
+            command = "UPDATE edits SET last_editor=\"" + last_editor + "\"" + "WHERE story_title = \"" + title + "\";"
+            print(command)
+            c.execute(command)
+
+            #Updates 'timestamp' entry in the table 'edits' for story 'story_title'
+            current_time = str(datetime.utcnow())
+            command = "UPDATE edits SET time_stamp=\"" + current_time + "\" WHERE story_title =\"" + title + "\";"
+            print(command)
+            c.execute(command)
+
+            #Updates 'stories_edited' entry in the table 'users' for user 'user'
+            command = "SELECT stories_edited FROM users WHERE username = \"" + session['user'] + "\";"
+            print(command)
+            c.execute(command)
+            current_stories_edited = c.fetchall()
+            current_stories_edited = str(current_stories_edited)[3:-4]
+            updated_stories_edited = current_stories_edited + "," + title
+            command = "UPDATE users SET stories_edited=\"" + updated_stories_edited + "\" WHERE username = \"" + session['user'] + "\";"
+            print(command)
+            c.execute(command)
+
+            #stuff
+            command = "SELECT story FROM edits WHERE story_title =\"" + title + "\";"
+            c.execute(command)
+            all_edits = c.fetchall()
+            entire_story = str(all_edits)[3:-4]
+            db.commit()
+            db.close()
+            return render_template("viewstory.html", title = title, entire_story = entire_story)
 
 
 @app.route("/fullstory")
@@ -468,15 +505,15 @@ def edit_tags():
     return render_template("tagedit.html", tag_list=tag_coll, story_title=story_name)
 
 
-@app.route("/addtag", methods=['GET','POST'])
+@app.route("/addtag", methods=['GET', 'POST'])
 def add_tag():
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command="SELECT tags FROM edits WHERE story_title = "+"\""+request.args.get('story')+"\";" #find the whole story
+    command = "SELECT tags FROM edits WHERE story_title = " + "\"" + request.args.get('story') + "\";"  # find the whole story
     c.execute(command)
-    print(request.form.get('new_tags'))
-    tag=str(c.fetchall()[0])[2:-3] #format into string
-    command="UPDATE edits SET story= \""+tag+" "+request.form.get('new_tags')+"\""+ " WHERE story_title ="+"\""+request.args.get('story')+"\";"
+    tag = str(c.fetchall()[0])[2:-3]  # format into string
+    command="UPDATE edits SET tags= \"" + str(tag) + " " + str(request.form.get('new_tags')) + "\"" + " WHERE story_title ="+"\""+request.args.get('story')+"\";"
+    print(command)
     c.execute(command)
     db.commit()
     db.close()
@@ -520,8 +557,7 @@ def delete():
     c.execute(command)
     db.commit()
     db.close()
-    return render_template("deletestory.html", title = request.args.get('value'))
-
+    return render_template("deletestory.html", title=request.args.get('value'))
 
 @app.route("/updateprofile")
 def update():
