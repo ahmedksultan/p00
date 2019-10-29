@@ -232,3 +232,6 @@ alnasserA -- 2019-10-28 01:53
 	- refractored a few of the equality checks with None etc.
 	- modified devlog.txt
 
+zhengA-- 2018-10-28
+	-found minor bug dealing with turning tuple into list and fixed it
+	-found minor profile changing problem
