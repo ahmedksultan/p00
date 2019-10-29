@@ -174,7 +174,7 @@ def signcheck():
         flash("Please give a username.")
         return render_template('signup.html')
     else:
-        check = check_sign(username, password)  # check if username already exists in database
+        check = check_sign(username)  # check if username already exists in database
         if check != "done":
             flash("" + check)
             return render_template('signup.html')
