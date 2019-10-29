@@ -203,13 +203,16 @@ def story():
         c = db.cursor()
         command = "SELECT stories_edited FROM users WHERE \""+session.get('user')+"\" =username;"
         c.execute(command)
-        mystories = c.fetchall()  # get the results of the selection
-        if str(mystories[0])[2:-3] == "on":
-            collection = []
-        else:
-            mystories = str(mystories[0])[2:-3]
-            collection = mystories.split(",")
-            sorted(collection)
+        mystories =c.fetchall()  # get the results of the selection
+        count=0
+        collection=[]
+        while count<len(mystories[0]):
+            #print(mystories[0][0])
+            if mystories[0][0] != None:
+                collection.append(str(mystories[0][count]))
+            count+=1
+        #print(collection)
+        sorted(collection)
         db.commit()  # save changes
         db.close()  # close database
         if is_admin():
@@ -300,12 +303,15 @@ def display_all():
     c = db.cursor()
     command = "SELECT story_title from edits"  # get all stories
     c.execute(command)
-    all = c.fetchall()
-    collection = []
-    for item in all:  # turn every item into a string and put it into a list to display
-        if str(item) not in collection:
-            collection.append(str(item)[2:-3])
-    sorted(collection)  # make in alphabetical order
+    all =c.fetchall()  # get the results of the selection
+    count=0
+    collection=[]
+    while count<len(all[0]):
+        if all[0][0] != None:
+            collection.append(str(all[0][count]))
+        count+=1
+    #print(collection)
+    sorted(collection)
     db.commit()  # save changes
     db.close()
     if is_admin():
@@ -346,6 +352,7 @@ def see_entry():
     if session.get('user') is None:  # only give access to this page if there's a user
         return redirect(url_for("start"))
     title = request.form['story_title']  # retrieve story input
+    #print("this is title:"+title)
     tags = request.form['tags']
     first_entry = request.form['entry_1']
     if title == "" or tags == "" or first_entry == "":  # if there is no input, flash error message and refresh page
@@ -355,6 +362,7 @@ def see_entry():
         db = sqlite3.connect(DB_FILE)
         c = db.cursor()
         created_title = request.form['story_title']
+        #print("createdtitle:"+created_title)
         created_tags = request.form['tags']
         created_entry = request.form['entry_1']
         # insert story input intod database
@@ -365,8 +373,14 @@ def see_entry():
         command = "SELECT stories_edited FROM users WHERE username = \"" + session['user'] + "\";"
         c.execute(command)
         current_stories_edited = c.fetchall()
-        current_stories_edited = str(current_stories_edited)[3:-4]
-        updated_stores_edited = current_stories_edited + "," + created_title  # add the new story onto the list
+        count=0
+        edit_total=""
+        while count<len(current_stories_edited[0]):
+            #print(current_stories_edited[0][0])
+            if current_stories_edited[0][0] != None:
+                edit_total+=str(mystories[0][count])+" "
+            count+=1
+        updated_stores_edited = edit_total+ created_title  # add the new story onto the list
         command = "UPDATE users SET stories_edited=\"" + updated_stores_edited + \
                   "\" WHERE username = \"" + session['user'] + "\";"
         c.execute(command)
