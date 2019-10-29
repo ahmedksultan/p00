@@ -68,7 +68,7 @@ def check_pwd(user, pwd):  # function for checking if a password is correct
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    command = "SELECT password FROM users WHERE username = " + user + ";"
+    command = "SELECT password FROM users WHERE username = \"" + user + "\";"
     # check if password is in database for the username
     cur = c.execute(command)
     temp = cur.fetchone()
@@ -384,9 +384,19 @@ def see_entry():
         command = "UPDATE users SET stories_edited=\"" + updated_stores_edited + \
                   "\" WHERE username = \"" + session['user'] + "\";"
         c.execute(command)
+        command = "SELECT tags FROM edits WHERE story_title=" + "\"" + created_title+ "\";"
+        c.execute(command)
+        tags = c.fetchall()
+        count=0
+        tag_coll=[]
+        while count<len(tags[0]):
+            if tags[0][0] != None:
+                tag_coll.append(str(tags[0][count]))
+            count+=1
+        sorted(tag_coll)
         db.commit()
         db.close()
-        return render_template("viewstory.html", title=created_title, entire_story=created_entry)
+        return render_template("viewstory.html", title=created_title, entire_story=created_entry,tag_list=tag_coll)
 
 
 @app.route("/editstory")  # editing page
@@ -526,11 +536,14 @@ def full():
         # retrieves all tags of the story
         command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
         c.execute(command)
-        tags = str(c.fetchall())[3:-4]
-        tag_coll = list()
-        for tag in tags.split(' '):
-            tag_coll.append(str(tag).strip("'"))
-        tag_coll = [x for x in tag_coll if x != ""]
+        tags = c.fetchall()
+        count=0
+        tag_coll=[]
+        while count<len(tags[0]):
+            if tags[0][0] != None:
+                tag_coll.append(str(tags[0][count]))
+            count+=1
+        sorted(tag_coll)
         return render_template("viewstory.html", title=title, entire_story=all_edits, tag_list=tag_coll)
 
 
