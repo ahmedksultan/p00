@@ -206,12 +206,15 @@ def story():
         mystories =c.fetchall()  # get the results of the selection
         count=0
         collection=[]
+        print(mystories)
         while count<len(mystories[0]):
-            #print(mystories[0][0])
+            print(mystories[0][count])
             if mystories[0][count] != None:
                 collection.append(str(mystories[0][count]))
             count+=1
-        #print(collection)
+        if len(collection)>0:
+            collection=collection[0].split(",")
+        print(collection)
         sorted(collection)
         db.commit()  # save changes
         db.close()  # close database
@@ -304,11 +307,13 @@ def display_all():
     command = "SELECT story_title from edits"  # get all stories
     c.execute(command)
     all =c.fetchall()  # get the results of the selection
+    print(all)
     count=0
     collection=[]
-    while count<len(all[0]):
-        if all[0][count] != None:
-            collection.append(str(all[0][count]))
+    while count<len(all):
+        print(all[count][0])
+        if all[count][0] != None:
+            collection.append(str(all[count][0]))
         count+=1
     #print(collection)
     sorted(collection)
@@ -378,11 +383,10 @@ def see_entry():
         while count<len(current_stories_edited[0]):
             #print(current_stories_edited[0][0])
             if current_stories_edited[0][count] != None:
-                edit_total+=str(current_stories_edited[0][count])+" "
+                edit_total+=str(current_stories_edited[0][count])+","
             count+=1
         updated_stores_edited = edit_total+ created_title  # add the new story onto the list
-        command = "UPDATE users SET stories_edited=\"" + updated_stores_edited + \
-                  "\" WHERE username = \"" + session['user'] + "\";"
+        command = "UPDATE users SET stories_edited=\"" + updated_stores_edited +"\" WHERE username = \"" + session['user'] + "\";"
         c.execute(command)
         command = "SELECT tags FROM edits WHERE story_title=" + "\"" + created_title+ "\";"
         c.execute(command)
@@ -543,6 +547,8 @@ def full():
             if tags[0][count] != None:
                 tag_coll.append(str(tags[0][count]))
             count+=1
+        if len(tag_coll)>0:
+            tag_coll=tag_coll[0].split(",")
         sorted(tag_coll)
         return render_template("viewstory.html", title=title, entire_story=all_edits, tag_list=tag_coll)
 
