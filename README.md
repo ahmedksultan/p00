@@ -1,6 +1,6 @@
 # FOLDOVER by Printer Carts
-
 ## Instructions on Using FoldOver:<br>
+      *** Please run python db_builder.py before python app.py if there is no foldover.db in /data ***
       -Enter password and username
             -If you do not have an account, press sign up to make one
       -Mystories display all stories you have ever edited
