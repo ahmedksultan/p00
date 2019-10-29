@@ -17,7 +17,7 @@ def add_user(user, passphrase, admin):  # function for adding a user into the us
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     command = "INSERT INTO users (username, password, is_admin) " \
-              "VALUES (\'" + user + "\', \'" + passphrase + "\', " + str(admin) + ")"
+              "VALUES (\"" + user + "\", \"" + passphrase + "\", " + str(admin) + ")"
     c.execute(command)  # store a new user's name and password
     db.commit()
     db.close()
@@ -31,7 +31,7 @@ def check_user(user, pwd):  # function for checking if a user's login credential
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    command = "SELECT password FROM users WHERE username = \'" + user + "\'"  # check if username is in database
+    command = "SELECT password FROM users WHERE username = \"" + user + "\""  # check if username is in database
     cur = c.execute(command)
     temp = cur.fetchone()
     if temp:  # if username is in database...
@@ -52,7 +52,7 @@ def check_sign(user):  # function for checking if a new user's username already 
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
     command = "SELECT password FROM users " \
-              "WHERE username = \'" + user + "\'"  # check if username is already in database
+              "WHERE username = \"" + user + "\""  # check if username is already in database
     cur = c.execute(command)
     temp = cur.fetchone()
     if temp:  # if username is in database...
@@ -68,7 +68,7 @@ def check_pwd(user, pwd):  # function for checking if a password is correct
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    command = "SELECT password FROM users WHERE username = \'" + user + "\';"
+    command = "SELECT password FROM users WHERE username = \"" + user + "\";"
     # check if password is in database for the username
     cur = c.execute(command)
     temp = cur.fetchone()
@@ -89,8 +89,8 @@ def edit_name(old_user, new_user):  # function for editing the username
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    command = "UPDATE users SET username = \'" + new_user + "\' " \
-                                                            "WHERE username = \'" + old_user + "\';"  # update username
+    command = "UPDATE users SET username = \"" + new_user + "\" " \
+                                                            "WHERE username = \"" + old_user + "\";"  # update username
     c.execute(command)
     db.commit()
     db.close()
@@ -104,7 +104,7 @@ def edit_pwd(old_pwd, new_pwd):  # function for changing password
         waitlist.remove(ip)
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    command = "UPDATE users SET password = \'" + new_pwd + "\' WHERE password = \'" + old_pwd + "\'"  # update password
+    command = "UPDATE users SET password = \"" + new_pwd + "\" WHERE password = \"" + old_pwd + "\""  # update password
     c.execute(command)
     db.commit()
     db.close()
@@ -114,7 +114,7 @@ def edit_pwd(old_pwd, new_pwd):  # function for changing password
 def is_admin():  # check if user is an admin
     db = sqlite3.connect(DB_FILE)  # open database
     c = db.cursor()
-    command = "SELECT is_admin FROM users WHERE username=" + "\'" + session['user'] + "\';"
+    command = "SELECT is_admin FROM users WHERE username=" + "\"" + session['user'] + "\";"
     c.execute(command)
     ouptut = int(str(c.fetchall())[2:-3])
     return bool(ouptut)
@@ -174,7 +174,7 @@ def signcheck():
         flash("Please give a username.")
         return render_template('signup.html')
     else:
-        check = check_sign(username, password)  # check if username already exists in database
+        check = check_sign(username)  # check if username already exists in database
         if check != "done":
             flash("" + check)
             return render_template('signup.html')
@@ -201,7 +201,7 @@ def story():
     else:
         db = sqlite3.connect(DB_FILE)  # open database
         c = db.cursor()
-        command = "SELECT stories_edited FROM users WHERE \'"+session.get('user')+"\' =username;"
+        command = "SELECT stories_edited FROM users WHERE \""+session.get('user')+"\" =username;"
         c.execute(command)
         mystories =c.fetchall()  # get the results of the selection
         count=0
@@ -258,23 +258,23 @@ def take():
         count = 0
         while count < len(keywords):  # loop through to see if any titles contain the keywords inputted
             if count == len(keywords)-1:
-                command += "story_title LIKE \'%" + keywords[count] + "%\'"
+                command += "story_title LIKE \"%" + keywords[count] + "%\""
             else:
-                command += "story_title LIKE \'%" + keywords[count] + "%\' OR "
+                command += "story_title LIKE \"%" + keywords[count] + "%\" OR "
             count += 1
     if len(tags) > 0 and len(keywords) == 0:  # if only tags inputed
         command = "SELECT story_title FROM edits WHERE "  # begin selecting story titles that match tags
         count = 0
         while count < len(tags):  # loop through to see if any stories contain the tags inputted
             if count == len(tags) - 1:
-                command += "tags LIKE \'%" + tags[count] + "%\' "
+                command += "tags LIKE \"%" + tags[count] + "%\" "
             else:
-                command += "tags LIKE \'%" + tags[count] + "%\' OR "
+                command += "tags LIKE \"%" + tags[count] + "%\" OR "
             count += 1
     if len(keywords) > 0 and len(tags) > 0:  # if both search fields are inputted
         count = 0
         while count < len(tags):  # loop through tags because keywords are already searched
-            command += " OR tags LIKE \'%"+tags[count]+"%\' "  # loop through to find stories that contained those tags
+            command += " OR tags LIKE \"%"+tags[count]+"%\" "  # loop through to find stories that contained those tags
             count += 1
     command += ";"
     c.execute(command)
@@ -371,11 +371,11 @@ def see_entry():
         created_tags = request.form['tags']
         created_entry = request.form['entry_1']
         # insert story input intod database
-        command = "INSERT INTO edits VALUES(\'" + created_title + "\',\'" + str(datetime.utcnow()) + \
-                  "\',\'" + session['user'] + "\',\'" + created_tags + "\',\'" + created_entry + "\');"
+        command = "INSERT INTO edits VALUES(\"" + created_title + "\",\"" + str(datetime.utcnow()) + \
+                  "\",\"" + session['user'] + "\",\"" + created_tags + "\",\'" + created_entry.replace("'","''") + "\');"
         c.execute(command)
         # update users
-        command = "SELECT stories_edited FROM users WHERE username = \'" + session['user'] + "\';"
+        command = "SELECT stories_edited FROM users WHERE username = \"" + session['user'] + "\";"
         c.execute(command)
         current_stories_edited = c.fetchall()
         count=0
@@ -386,9 +386,9 @@ def see_entry():
                 edit_total+=str(current_stories_edited[0][count])+","
             count+=1
         updated_stores_edited = edit_total+ created_title  # add the new story onto the list
-        command = "UPDATE users SET stories_edited=\'" + updated_stores_edited +"\' WHERE username = \'" + session['user'] + "\';"
+        command = "UPDATE users SET stories_edited=\"" + updated_stores_edited +"\" WHERE username = \"" + session['user'] + "\";"
         c.execute(command)
-        command = "SELECT tags FROM edits WHERE story_title=" + "\'" + created_title+ "\';"
+        command = "SELECT tags FROM edits WHERE story_title=" + "\"" + created_title+ "\";"
         c.execute(command)
         tags = c.fetchall()
         count=0
@@ -400,7 +400,7 @@ def see_entry():
         sorted(tag_coll)
         db.commit()
         db.close()
-        return render_template("viewstory.html", title=created_title, entire_story=created_entry,tag_list=tag_coll)
+        return render_template("viewstory.html", title=created_title, entire_story=created_entry.replace("\\"","'"),tag_list=tag_coll)
 
 
 @app.route("/editstory")  # editing page
@@ -413,16 +413,16 @@ def queue():
     c = db.cursor()
     if len(waitlist) == 0 and ip not in waitlist:
         waitlist.append(request.environ["REMOTE_ADDR"])  # if ip is not in waitlist, add it
-    command = "SELECT stories_edited FROM users WHERE username = \'" +session.get('user')+"\';"
+    command = "SELECT stories_edited FROM users WHERE username = \"" +session.get('user')+"\";"
     c.execute(command)
     editedstories=str(c.fetchall())
     title_save = request.args.get('value')
-    command = "SELECT story FROM edits WHERE story_title = \'"+title_save+"\';"
+    command = "SELECT story FROM edits WHERE story_title = \""+title_save+"\";"
     # find the text of a specified story title
     c.execute(command)
     all_edits = c.fetchall()
     all_edits = str(all_edits)[3:-4]  # format string for readability
-    command = "SELECT tags FROM edits WHERE story_title=" + "\'" + title_save + "\';"
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + title_save + "\";"
     c.execute(command)
     # retrieve all the tags for the story
     tags = str(c.fetchall())[3:-4]
@@ -465,47 +465,47 @@ def view():
         else:
             # Updates 'story' entry in the table 'edits' for story 'story_title'
             title = request.args.get('value')
-            command = "SELECT story FROM edits WHERE story_title =\'" + title + "\';"
+            command = "SELECT story FROM edits WHERE story_title =\"" + title + "\";"
             # #print(command)
             c.execute(command)
             current_edits = c.fetchall()
             current_edits = str(current_edits)[3:-4]  # format
             print(new_entry)
             updated_edits = current_edits.replace("'","''") + " | " + new_entry.replace("'","''")  # updated = current + new
-            command = "UPDATE edits SET story=\'" + updated_edits + "\' WHERE story_title = \'" + title + "\';"
+            command = "UPDATE edits SET story=\'" + updated_edits + "\' WHERE story_title = \"" + title + "\";"
             print(command)
             c.execute(command)
             #print(command)
             # Updates 'last_editor' entry in table 'edits' for story 'story_title'
             last_editor = session['user']
-            command = "UPDATE edits SET last_editor=\'" + last_editor + "\' WHERE story_title = \'" + title + "\';"
+            command = "UPDATE edits SET last_editor=\"" + last_editor + "\" WHERE story_title = \"" + title + "\";"
             # #print(command)
             c.execute(command)
 
             # Updates 'timestamp' entry in the table 'edits' for story 'story_title'
             current_time = str(datetime.utcnow())
-            command = "UPDATE edits SET time_stamp=\'" + current_time + "\' WHERE story_title =\'" + title + "\';"
+            command = "UPDATE edits SET time_stamp=\"" + current_time + "\" WHERE story_title =\"" + title + "\";"
             # #print(command)
             c.execute(command)
 
             # Updates 'stories_edited' entry in the table 'users' for user 'user'
-            command = "SELECT stories_edited FROM users WHERE username = \'" + session['user'] + "\';"
+            command = "SELECT stories_edited FROM users WHERE username = \"" + session['user'] + "\";"
             # #print(command)
             c.execute(command)
             current_stories_edited = c.fetchall()
             current_stories_edited = str(current_stories_edited)[3:-4]
             updated_stories_edited = current_stories_edited + "," + title
-            command = "UPDATE users SET stories_edited=\'" + updated_stories_edited + \
-                      "\' WHERE username = \'" + session['user'] + "\';"
+            command = "UPDATE users SET stories_edited=\"" + updated_stories_edited + \
+                      "\" WHERE username = \"" + session['user'] + "\";"
             # #print(command)
             c.execute(command)
-            command = "SELECT story FROM edits WHERE story_title =\'" + title + "\';"
+            command = "SELECT story FROM edits WHERE story_title =\"" + title + "\";"
             c.execute(command)
             all_edits = c.fetchall()
             entire_story = str(all_edits)[3:-4].replace("\\'","'")
 
             # retrieves all tags of the story
-            command = "SELECT tags FROM edits WHERE story_title=" + "\'" + request.args.get('value') + "\';"
+            command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
             c.execute(command)
             tags = str(c.fetchall())[3:-4]
             tag_coll = list()
@@ -530,7 +530,7 @@ def full():
         return redirect(url_for("start"))
     else:
         command = "SELECT story FROM edits WHERE " \
-                  "story_title = \'"+request.args.get('value')+"\';"  # display requested story
+                  "story_title = \""+request.args.get('value')+"\";"  # display requested story
         c.execute(command)
         title = request.args.get('value')
         all_edits = c.fetchall()
@@ -539,7 +539,7 @@ def full():
         except IndexError:
             return render_template("deleted.html")
         # retrieves all tags of the story
-        command = "SELECT tags FROM edits WHERE story_title=" + "\'" + request.args.get('value') + "\';"
+        command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
         c.execute(command)
         tags = c.fetchall()
         count=0
@@ -564,21 +564,24 @@ def close():
         return redirect(url_for("start"))
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command = "SELECT story FROM edits WHERE story_title = "+"\'"+request.args.get('value')+"\';"  # find the story
+    command = "SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";"  # find the story
+    print(command)
     c.execute(command)
-    view = str(c.fetchall()[0])[2:-3]  # format into string
+
+    view = str(c.fetchall()[0])[2:-3].replace("'","''") # format into string
     command = "UPDATE edits SET story= \'"+view+"|||||||||||||||||||" \
             "|||||||||||||||||||||||||||||||||||||||||||||||||||||||" \
             "|||||||||||||||||||||||||||||||||||||||||||||||||||||||" \
             "||||||||||||||||||||||||||||||||||||||||||||||||||||||||" \
-            "|||||||||||||||\'" + " WHERE story_title =" + "\'" + request.args.get('value') + "\';"
+            "|||||||||||||||\'" + " WHERE story_title =" + "\"" + request.args.get('value')+ "\";"
     # add 200 pipes to end editing
+    print(command)
     c.execute(command)
-    command = "SELECT story FROM edits WHERE story_title = "+"\'"+request.args.get('value')+"\';"  # get new story now
+    command = "SELECT story FROM edits WHERE story_title = "+"\""+request.args.get('value')+"\";"  # get new story now
     c.execute(command)
-    view = str(c.fetchall()[0])[2:-3]
+    view = str(c.fetchall()[0])[2:-3].replace("\\'","'")
     # retrieve all tags for the story
-    command = "SELECT tags FROM edits WHERE story_title=" + "\'" + request.args.get('value') + "\';"
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + request.args.get('value') + "\";"
     c.execute(command)
     tags = str(c.fetchall())[3:-4]
     tag_coll = list()
@@ -602,7 +605,7 @@ def edit_tags():
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
     story_name = request.args.get('value')  # get story title
-    command = "SELECT tags FROM edits WHERE story_title=" + "\'" + story_name + "\';"  # retrieve all tags for the story
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"  # retrieve all tags for the story
     c.execute(command)
     tags = str(c.fetchall())[3:-4]
     tag_coll = list()
@@ -622,7 +625,7 @@ def add_tag():
         return redirect(url_for("start"))
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command = "SELECT tags FROM edits WHERE story_title = " + "\'" + request.args.get('story') + ";"  # retrieve all tags for the story
+    command = "SELECT tags FROM edits WHERE story_title = " + "\"" + request.args.get('story') + "\";"  # retrieve all tags for the story
     # find the whole story
     # #print(command)
     c.execute(command)
@@ -631,8 +634,8 @@ def add_tag():
     if newtag[0] != "#":
         newtag = "#" + newtag
     if newtag not in tag:
-        command = "UPDATE edits SET tags= \'" + str(tag) + " " + newtag + "\'" + \
-                "WHERE story_title ="+"\'"+request.args.get('story')+";"  # add new tags to list of tags
+        command = "UPDATE edits SET tags= \"" + str(tag) + " " + newtag + "\"" + \
+                "WHERE story_title ="+"\""+request.args.get('story')+"\";"  # add new tags to list of tags
         # #print(command)
         c.execute(command)
         db.commit()
@@ -653,7 +656,7 @@ def delete_tag():
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
     # retrieve all tags for a story
-    command = "SELECT tags FROM edits WHERE story_title=" + "\'" + story_name + "\';"
+    command = "SELECT tags FROM edits WHERE story_title=" + "\"" + story_name + "\";"
     c.execute(command)
     tags =c.fetchall()  # get the results of the selection
     count=0
@@ -674,7 +677,7 @@ def delete_tag():
         tag_coll_str=" ".join(collection)
         #print(tag_coll_str)
     # update tags list after deletion
-    command = "UPDATE edits SET tags=" + "\'" + tag_coll_str + "\'" + " WHERE story_title=" + "\'" + story_name + "\';"
+    command = "UPDATE edits SET tags=" + "\"" + tag_coll_str + "\"" + " WHERE story_title=" + "\"" + story_name + "\";"
     c.execute(command)
     db.commit()
     db.close()
@@ -691,7 +694,7 @@ def delete():
         return redirect(url_for("start"))
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command = "DELETE FROM edits WHERE story_title = \'"+request.args.get('value')+"\';"  # delete entire row from edits
+    command = "DELETE FROM edits WHERE story_title = \""+request.args.get('value')+"\";"  # delete entire row from edits
     c.execute(command)
     db.commit()
     db.close()
