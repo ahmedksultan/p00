@@ -400,7 +400,8 @@ def see_entry():
         sorted(tag_coll)
         db.commit()
         db.close()
-        return render_template("viewstory.html", title=created_title, entire_story=created_entry.replace("\\"","'"),tag_list=tag_coll)
+        created_entry=created_entry.replace("\\'","'")
+        return render_template("viewstory.html", title=created_title, entire_story=created_entry,tag_list=tag_coll)
 
 
 @app.route("/editstory")  # editing page
@@ -625,17 +626,30 @@ def add_tag():
         return redirect(url_for("start"))
     db = sqlite3.connect(DB_FILE)
     c = db.cursor()
-    command = "SELECT tags FROM edits WHERE story_title = " + "\"" + request.args.get('story') + "\";"  # retrieve all tags for the story
+    title=str(request.args.get('story')).replace('"','')
+    command = "SELECT tags FROM edits WHERE story_title = " + "\"" + title+ "\";"  # retrieve all tags for the story
     # find the whole story
     # #print(command)
     c.execute(command)
-    tag = str(c.fetchall()[0])[2:-3]  # format into string
+    tags =c.fetchall()  # get the results of the selection
+    count=0
+    collection=[]
+    #print(tags)
+    while count<len(tags[0]):
+        #print(tags[0][count])
+        #print(tags[0][count])
+        if tags[0][count] != None:
+            collection.append(str(tags[0][count]))
+        count+=1
+    if len(collection)>0:
+        collection=collection[0].split(" ")
+        tag_coll_str=" ".join(collection)
     newtag = str(request.form.get('new_tags'))  # retrieve input for new tags
-    if newtag[0] != "#":
+    if len(newtag)>0 and newtag[0] != "#":
         newtag = "#" + newtag
-    if newtag not in tag:
-        command = "UPDATE edits SET tags= \"" + str(tag) + " " + newtag + "\"" + \
-                "WHERE story_title ="+"\""+request.args.get('story')+"\";"  # add new tags to list of tags
+    if newtag not in tag_coll_str:
+        command = "UPDATE edits SET tags= \"" + tag_coll_str + " " + newtag + "\"" + \
+                "WHERE story_title ="+"\""+title+"\";"  # add new tags to list of tags
         # #print(command)
         c.execute(command)
         db.commit()
