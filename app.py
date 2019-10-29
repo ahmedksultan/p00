@@ -208,7 +208,7 @@ def story():
         collection=[]
         while count<len(mystories[0]):
             #print(mystories[0][0])
-            if mystories[0][0] != None:
+            if mystories[0][count] != None:
                 collection.append(str(mystories[0][count]))
             count+=1
         #print(collection)
@@ -307,7 +307,7 @@ def display_all():
     count=0
     collection=[]
     while count<len(all[0]):
-        if all[0][0] != None:
+        if all[0][count] != None:
             collection.append(str(all[0][count]))
         count+=1
     #print(collection)
@@ -377,8 +377,8 @@ def see_entry():
         edit_total=""
         while count<len(current_stories_edited[0]):
             #print(current_stories_edited[0][0])
-            if current_stories_edited[0][0] != None:
-                edit_total+=str(mystories[0][count])+" "
+            if current_stories_edited[0][count] != None:
+                edit_total+=str(current_stories_edited[0][count])+" "
             count+=1
         updated_stores_edited = edit_total+ created_title  # add the new story onto the list
         command = "UPDATE users SET stories_edited=\"" + updated_stores_edited + \
@@ -390,7 +390,7 @@ def see_entry():
         count=0
         tag_coll=[]
         while count<len(tags[0]):
-            if tags[0][0] != None:
+            if tags[0][count] != None:
                 tag_coll.append(str(tags[0][count]))
             count+=1
         sorted(tag_coll)
@@ -540,7 +540,7 @@ def full():
         count=0
         tag_coll=[]
         while count<len(tags[0]):
-            if tags[0][0] != None:
+            if tags[0][count] != None:
                 tag_coll.append(str(tags[0][count]))
             count+=1
         sorted(tag_coll)
