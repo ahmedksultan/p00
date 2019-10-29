@@ -470,7 +470,7 @@ def view():
             c.execute(command)
             current_edits = c.fetchall()
             current_edits = str(current_edits)[3:-4]  # format
-            updated_edits = current_edits + " | " + new_entry  # updated = current + new
+            updated_edits = current_edits + " | " + new_entry.replace("\"","\\\"")  # updated = current + new
             command = "UPDATE edits SET story=\"" + updated_edits + "\" WHERE story_title = \"" + title + "\";"
             # print(command)
             c.execute(command)
